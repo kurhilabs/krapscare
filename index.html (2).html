@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kraps Care – Smart System</title>
+<style>
+:root{
+  --navy:#07111f;--dark:#0d1b2e;--card:#111f35;
+  --blue:#1045a1;--elec:#00b4f0;--cyan:#00e5ff;
+  --green:#00c97a;--amber:#ffaa00;--red:#ff4d6d;
+  --white:#f0f6ff;--gray:#7a90a8;--border:rgba(0,180,240,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--elec);border-radius:2px;}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.spin{width:48px;height:48px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--elec);animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;white-space:nowrap;}
+.bp{background:var(--elec);color:var(--navy);}
+.bp:hover{background:var(--cyan);transform:translateY(-1px);}
+.bg{background:var(--green);color:#fff;}
+.bg:hover{filter:brightness(1.1);}
+.ba{background:var(--amber);color:var(--navy);}
+.ba:hover{filter:brightness(1.1);}
+.br{background:var(--red);color:#fff;}
+.br:hover{filter:brightness(1.1);}
+.bo{background:transparent;border:1.5px solid var(--elec);color:var(--elec);}
+.bo:hover{background:rgba(0,180,240,0.1);}
+.bgh{background:rgba(255,255,255,0.06);color:var(--gray);border:1px solid var(--border);}
+.bgh:hover{background:rgba(255,255,255,0.1);color:var(--white);}
+.bsm{padding:7px 13px;font-size:12px;border-radius:7px;}
+.bfull{width:100%;}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;}
+
+/* FORMS */
+.fg{margin-bottom:15px;}
+.fg label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--elec);margin-bottom:6px;}
+.fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:8px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--white);outline:none;transition:border .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--elec);background:rgba(0,180,240,0.05);}
+.fg select option{background:#0d1b2e;}
+.fg textarea{resize:vertical;min-height:75px;}
+.pfx{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.pfx span{padding:11px 13px;background:rgba(0,180,240,0.1);color:var(--elec);font-size:13px;font-weight:700;border-right:1.5px solid var(--border);}
+.pfx input{border:none;border-radius:0;background:transparent;flex:1;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.card-t{position:relative;overflow:hidden;}
+.card-t::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.card-t.bl::before{background:linear-gradient(90deg,var(--blue),var(--elec));}
+.card-t.gr::before{background:linear-gradient(90deg,#00b09b,var(--green));}
+.card-t.am::before{background:linear-gradient(90deg,#ff8c00,var(--amber));}
+.card-t.rd::before{background:linear-gradient(90deg,#c80036,var(--red));}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gcol{grid-column:1/-1;}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* STAT */
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.sn{font-size:30px;font-weight:900;line-height:1;}
+.sl{font-size:10px;color:var(--gray);margin-top:5px;text-transform:uppercase;letter-spacing:1px;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(0,180,240,0.08);}
+th{padding:11px 13px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--elec);text-align:left;white-space:nowrap;}
+td{padding:11px 13px;font-size:13px;border-top:1px solid var(--border);vertical-align:middle;}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+
+/* MODAL */
+.mov{position:fixed;inset:0;z-index:800;background:rgba(5,12,25,0.92);display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.mov.show{display:flex;}
+.modal{background:var(--dark);border:1px solid var(--border);border-radius:16px;width:100%;max-width:660px;margin:auto;animation:su .22s ease;}
+@keyframes su{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.mhd h3{font-size:16px;}
+.mx{width:30px;height:30px;border-radius:7px;border:none;background:rgba(255,255,255,0.07);color:var(--gray);cursor:pointer;font-size:18px;}
+.mx:hover{background:rgba(255,77,109,.2);color:var(--red);}
+.mbd{padding:22px;max-height:75vh;overflow-y:auto;}
+.mft{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end;}
+
+/* TOPBAR */
+.tb{display:flex;align-items:center;justify-content:space-between;padding:13px 22px;background:rgba(7,17,31,0.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px;}
+.tbl{display:flex;align-items:center;gap:10px;}
+.tbsq{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--elec));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;}
+.tbr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.uch{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:5px 11px;border-radius:20px;}
+.uav{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--elec));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;}
+.unm{font-size:13px;font-weight:600;}
+.url{font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+
+/* LAYOUT */
+.lay{display:flex;flex:1;min-height:0;}
+.sb{width:210px;flex-shrink:0;background:var(--dark);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:3px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all .15s;}
+.ni:hover{background:rgba(255,255,255,0.05);color:var(--white);}
+.ni.act{background:rgba(0,180,240,0.12);color:var(--elec);border:1px solid rgba(0,180,240,.2);}
+.sbf{margin-top:auto;padding-top:10px;border-top:1px solid var(--border);}
+.con{flex:1;padding:22px;overflow-y:auto;}
+
+/* WELCOME */
+#sw{background:radial-gradient(ellipse 80% 60% at 30% 40%,rgba(16,69,161,.3) 0%,transparent 70%),var(--navy);align-items:center;justify-content:center;padding:20px;}
+.wb{width:100%;max-width:400px;background:rgba(13,27,46,.97);border:1px solid var(--border);border-radius:20px;padding:32px;backdrop-filter:blur(12px);}
+.wlog{text-align:center;margin-bottom:24px;}
+.wli{width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--elec));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin:0 auto 10px;box-shadow:0 0 36px rgba(0,180,240,.3);}
+.rtabs{display:flex;gap:5px;background:rgba(0,0,0,.2);border-radius:9px;padding:4px;margin-bottom:20px;}
+.rt{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:var(--gray);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.rt.act{background:var(--elec);color:var(--navy);}
+.lp{display:none;}
+.lp.act{display:block;}
+
+/* OTP */
+.otpbox{background:rgba(0,180,240,.08);border:2px dashed var(--elec);border-radius:12px;padding:18px;text-align:center;margin:14px 0;}
+.otpnum{font-size:34px;font-weight:900;letter-spacing:10px;color:var(--elec);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.bbl{background:rgba(0,180,240,.15);color:var(--elec);border:1px solid rgba(0,180,240,.3);}
+.bgr{background:rgba(0,201,122,.15);color:var(--green);border:1px solid rgba(0,201,122,.3);}
+.bam{background:rgba(255,170,0,.15);color:var(--amber);border:1px solid rgba(255,170,0,.3);}
+.brd{background:rgba(255,77,109,.15);color:var(--red);border:1px solid rgba(255,77,109,.3);}
+.bgr2{background:rgba(122,144,168,.15);color:var(--gray);border:1px solid rgba(122,144,168,.3);}
+
+/* PANEL */
+.panel{display:none;}
+.panel.act{display:block;}
+.fadein{animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+
+/* BILL ITEMS */
+.ir{display:grid;grid-template-columns:1fr 58px 88px 30px;gap:6px;margin-bottom:6px;}
+.ir input{background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--white);font-family:inherit;font-size:13px;outline:none;width:100%;}
+.ir input:focus{border-color:var(--elec);}
+.idel{border:none;border-radius:6px;background:rgba(255,77,109,.15);color:var(--red);cursor:pointer;font-size:15px;font-weight:900;width:28px;}
+.idel:hover{background:rgba(255,77,109,.3);}
+.iaddbtn{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:7px;background:transparent;color:var(--elec);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-top:5px;}
+.iaddbtn:hover{border-color:var(--elec);background:rgba(0,180,240,.05);}
+.bsum{background:rgba(0,180,240,.06);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;}
+.bsr{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:var(--gray);}
+.bsr.tot{border-top:1px solid var(--border);padding-top:11px;margin-top:5px;font-size:17px;font-weight:900;color:var(--elec);}
+
+/* TERMS */
+.tcg{display:flex;flex-direction:column;gap:5px;max-height:190px;overflow-y:auto;}
+.tcc{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;padding:8px 11px;cursor:pointer;}
+.tcc input{margin-top:2px;accent-color:var(--elec);}
+.tcc span{font-size:12px;color:#c0cfe4;line-height:1.5;}
+
+/* MISC */
+.dv{height:1px;background:var(--border);margin:18px 0;}
+.sechd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.empty{text-align:center;padding:40px 20px;color:var(--gray);}
+.empty .ei{font-size:44px;margin-bottom:10px;opacity:.5;}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.dg{background:var(--green);}
+.da{background:var(--amber);}
+.db{background:var(--elec);}
+.dr{background:var(--red);}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;transform:translateY(70px);opacity:0;transition:all .3s;}
+#toast.show{transform:none;opacity:1;}
+.tb2{display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:11px;font-size:14px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.4);min-width:240px;}
+.ts{background:#0d3b26;border:1px solid rgba(0,201,122,.3);color:var(--green);}
+.te{background:#3b0d17;border:1px solid rgba(255,77,109,.3);color:var(--red);}
+.ti{background:#0d1f3b;border:1px solid rgba(0,180,240,.3);color:var(--elec);}
+
+@media(max-width:820px){.sb{display:none;}.con{padding:14px;}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader"><div class="spin"></div><div style="font-size:12px;color:var(--gray);letter-spacing:2px;">KRAPS CARE...</div></div>
+
+<!-- TOAST -->
+<div id="toast"><div class="tb2" id="tbox"></div></div>
+
+<!-- ═══════ WELCOME / LOGIN ═══════ -->
+<div id="sw" class="screen">
+  <div class="wb">
+    <div class="wlog">
+      <div class="wli">K</div>
+      <div style="font-size:20px;font-weight:900;color:var(--elec);">Kraps Care</div>
+      <div style="font-size:11px;color:var(--gray);letter-spacing:2px;margin-top:3px;">SMART DIGITAL SYSTEM</div>
+    </div>
+    <div class="rtabs">
+      <button class="rt act" onclick="rtab('admin',this)">Admin</button>
+      <button class="rt" onclick="rtab('tech',this)">Technician</button>
+      <button class="rt" onclick="rtab('cust',this)">Customer</button>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="lp act" id="lp-admin">
+      <div class="fg"><label>Username</label><input type="text" id="a-user" placeholder="admin" /></div>
+      <div class="fg"><label>Password</label><input type="password" id="a-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')loginAdmin()" /></div>
+      <button class="btn bp bfull" onclick="loginAdmin()">&#128274; Admin Login</button>
+    </div>
+
+    <!-- TECH -->
+    <div class="lp" id="lp-tech">
+      <div class="fg"><label>Mobile Number</label>
+        <div class="pfx"><span>+91</span><input type="tel" id="t-phone" placeholder="Registered number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeydown="if(event.key==='Enter')loginTech()" /></div>
+      </div>
+      <div class="fg"><label>Password</label><input type="password" id="t-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')loginTech()" /></div>
+      <button class="btn bp bfull" onclick="loginTech()">&#9881; Technician Login</button>
+    </div>
+
+    <!-- CUSTOMER OTP -->
+    <div class="lp" id="lp-cust">
+      <div id="cs1">
+        <div class="fg"><label>Mobile Number</label>
+          <div class="pfx"><span>+91</span><input type="tel" id="c-phone" placeholder="10-digit number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" /></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:5px;">&#9432; OTP demo mein screen par dikhega</div>
+        </div>
+        <button class="btn bp bfull" onclick="sendOTP()">&#128241; OTP Bhejo</button>
+      </div>
+      <div id="cs2" style="display:none;">
+        <div class="otpbox">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:5px;letter-spacing:1px;">AAPKA OTP</div>
+          <div class="otpnum" id="otp-show">------</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:5px;">10 minute mein expire hoga</div>
+        </div>
+        <div class="fg"><label>OTP Enter Karein</label><input type="tel" id="otp-in" placeholder="6-digit OTP" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeydown="if(event.key==='Enter')verifyOTP()" /></div>
+        <button class="btn bg bfull" onclick="verifyOTP()">&#10003; Verify &amp; Login</button>
+        <button class="btn bgh bfull" style="margin-top:7px;" onclick="resetOTP()">&#8592; Number Change Karein</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:18px;">
+      <a href="index.html" style="font-size:12px;color:var(--gray);">&#8592; Wapas Website Par</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN ═══════ -->
+<div id="sa" class="screen">
+  <div class="tb">
+    <div class="tbl"><div class="tbsq">K</div><span style="font-size:15px;font-weight:800;">Kraps Care <span style="color:var(--elec);font-size:10px;">ADMIN</span></span></div>
+    <div class="tbr">
+      <div class="uch"><div class="uav" id="a-av">A</div><div><div class="unm" id="a-nm">Admin</div><div class="url" style="color:var(--elec);">Administrator</div></div></div>
+      <button class="btn bp bsm" onclick="openMod('m-bill')">+ New Bill</button>
+      <button class="btn bgh bsm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="lay">
+    <div class="sb">
+      <button class="ni act" onclick="anav('ov',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Overview</button>
+      <button class="ni" onclick="anav('bills',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>All Bills</button>
+      <button class="ni" onclick="anav('comp',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>Complaints</button>
+      <button class="ni" onclick="anav('techs',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Technicians</button>
+      <button class="ni" onclick="anav('custs',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5c0-2.3-4.7-3.5-7-3.5zm8 0c-.3 0-.6 0-1 .1 1.2.9 2 2 2 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5z"/></svg>Customers</button>
+      <div class="sbf"><button class="ni" onclick="doLogout()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.4 1.4 2.6 2.6H8v2h10.2l-2.6 2.6L17 17l5-5-5-5zm-5 12H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2z"/></svg>Logout</button></div>
+    </div>
+    <div class="con">
+      <div class="panel act fadein" id="p-ov">
+        <h2 style="margin-bottom:18px;">Dashboard</h2>
+        <div class="g4" style="margin-bottom:20px;">
+          <div class="sc"><div class="sn" style="color:var(--elec);" id="st-b">0</div><div class="sl">Total Bills</div></div>
+          <div class="sc"><div class="sn" style="color:var(--green);" id="st-r">Rs.0</div><div class="sl">Revenue</div></div>
+          <div class="sc"><div class="sn" style="color:var(--amber);" id="st-c">0</div><div class="sl">Complaints</div></div>
+          <div class="sc"><div class="sn" style="color:var(--white);" id="st-t">0</div><div class="sl">Technicians</div></div>
+        </div>
+        <div class="g2">
+          <div class="card"><h4 style="margin-bottom:12px;color:var(--elec);">Recent Bills</h4><div id="ov-rbills"></div></div>
+          <div class="card"><h4 style="margin-bottom:12px;color:var(--amber);">Open Complaints</h4><div id="ov-rcomp"></div></div>
+        </div>
+      </div>
+      <div class="panel" id="p-bills">
+        <div class="sechd"><h3>All Bills</h3><input type="text" id="bsrch" placeholder="Search..." oninput="searchBills()" style="background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--white);font-size:13px;outline:none;width:200px;" /></div>
+        <div class="tw"><table><thead><tr><th>Bill No</th><th>Customer</th><th>Phone</th><th>Technician</th><th>Amount</th><th>Type</th><th>Date</th><th>Action</th></tr></thead><tbody id="atb"></tbody></table></div>
+      </div>
+      <div class="panel" id="p-comp">
+        <div class="sechd"><h3>All Complaints</h3>
+          <div style="display:flex;gap:6px;">
+            <button class="btn bgh bsm cff act" onclick="cfilter('all',this)">All</button>
+            <button class="btn bgh bsm cff" onclick="cfilter('pending',this)">Pending</button>
+            <button class="btn bgh bsm cff" onclick="cfilter('in_progress',this)">In Progress</button>
+            <button class="btn bgh bsm cff" onclick="cfilter('resolved',this)">Resolved</button>
+          </div>
+        </div>
+        <div class="tw"><table><thead><tr><th>ID</th><th>Customer</th><th>Issue</th><th>Status</th><th>Assigned</th><th>Date</th><th>Action</th></tr></thead><tbody id="actb"></tbody></table></div>
+      </div>
+      <div class="panel" id="p-techs">
+        <div class="sechd"><h3>Technicians</h3><button class="btn bp bsm" onclick="openMod('m-addtech')">+ Add Technician</button></div>
+        <div class="tw"><table><thead><tr><th>Name</th><th>Phone</th><th>Password</th><th>Status</th><th>Bills</th><th>Action</th></tr></thead><tbody id="attb"></tbody></table></div>
+      </div>
+      <div class="panel" id="p-custs">
+        <div class="sechd"><h3>All Customers</h3></div>
+        <div class="tw"><table><thead><tr><th>Name</th><th>Phone</th><th>Bills</th><th>Complaints</th><th>Joined</th></tr></thead><tbody id="actb2"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TECHNICIAN ═══════ -->
+<div id="st" class="screen">
+  <div class="tb">
+    <div class="tbl"><div class="tbsq">K</div><span style="font-size:15px;font-weight:800;">Kraps Care <span style="color:var(--elec);font-size:10px;">TECHNICIAN</span></span></div>
+    <div class="tbr">
+      <div class="uch"><div class="uav" id="t-av">T</div><div><div class="unm" id="t-nm">Tech</div><div class="url" style="color:var(--elec);">Technician</div></div></div>
+      <button class="btn bp bsm" onclick="openMod('m-bill')">+ New Bill</button>
+      <button class="btn bgh bsm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="lay">
+    <div class="sb">
+      <button class="ni act" onclick="tnav('ov',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard</button>
+      <button class="ni" onclick="tnav('bills',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>My Bills</button>
+      <button class="ni" onclick="tnav('comp',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>Complaints</button>
+      <div class="sbf"><button class="ni" onclick="doLogout()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.4 1.4 2.6 2.6H8v2h10.2l-2.6 2.6L17 17l5-5-5-5zm-5 12H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2z"/></svg>Logout</button></div>
+    </div>
+    <div class="con">
+      <div class="panel act fadein" id="tp-ov">
+        <h2 style="margin-bottom:18px;">My Dashboard</h2>
+        <div class="g3" style="margin-bottom:20px;">
+          <div class="sc"><div class="sn" style="color:var(--elec);" id="ts-b">0</div><div class="sl">My Bills</div></div>
+          <div class="sc"><div class="sn" style="color:var(--green);" id="ts-r">Rs.0</div><div class="sl">Revenue</div></div>
+          <div class="sc"><div class="sn" style="color:var(--amber);" id="ts-c">0</div><div class="sl">Assigned Complaints</div></div>
+        </div>
+        <div class="sechd"><h3>Recent Bills</h3><button class="btn bp bsm" onclick="openMod('m-bill')">+ Generate Bill</button></div>
+        <div id="t-rbills"></div>
+      </div>
+      <div class="panel" id="tp-bills">
+        <div class="sechd"><h3>My Bills</h3><button class="btn bp bsm" onclick="openMod('m-bill')">+ New Bill</button></div>
+        <div class="tw"><table><thead><tr><th>Bill No</th><th>Customer</th><th>Phone</th><th>Amount</th><th>Type</th><th>Date</th><th>Action</th></tr></thead><tbody id="ttb"></tbody></table></div>
+      </div>
+      <div class="panel" id="tp-comp">
+        <h3 style="margin-bottom:14px;">Assigned Complaints</h3>
+        <div class="tw"><table><thead><tr><th>ID</th><th>Customer</th><th>Issue</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="tctb"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ CUSTOMER ═══════ -->
+<div id="sc" class="screen">
+  <div class="tb">
+    <div class="tbl"><div class="tbsq" style="background:linear-gradient(135deg,#00b09b,var(--green));">K</div><span style="font-size:15px;font-weight:800;">Kraps Care <span style="color:var(--green);font-size:10px;">CUSTOMER</span></span></div>
+    <div class="tbr">
+      <div class="uch"><div class="uav" style="background:linear-gradient(135deg,#00b09b,var(--green));" id="c-av">C</div><div><div class="unm" id="c-nm">Customer</div><div class="url" style="color:var(--green);">Customer</div></div></div>
+      <button class="btn bgh bsm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="lay">
+    <div class="sb">
+      <button class="ni act" onclick="cnav('bills',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>My Bills</button>
+      <button class="ni" onclick="cnav('comp',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>My Complaints</button>
+      <div class="sbf"><button class="ni" onclick="doLogout()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.4 1.4 2.6 2.6H8v2h10.2l-2.6 2.6L17 17l5-5-5-5zm-5 12H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2z"/></svg>Logout</button></div>
+    </div>
+    <div class="con">
+      <div class="panel act fadein" id="cp-bills"><h2 style="margin-bottom:18px;">My Bills</h2><div id="c-blist"></div></div>
+      <div class="panel" id="cp-comp">
+        <div class="sechd"><h3>My Complaints</h3><button class="btn ba bsm" onclick="openMod('m-newcomp')">+ New Complaint</button></div>
+        <div id="c-clist"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- GENERATE BILL -->
+<div class="mov" id="m-bill" onclick="clov(event,this)">
+  <div class="modal" style="max-width:720px;">
+    <div class="mhd"><h3>&#128196; Generate Bill</h3><button class="mx" onclick="closeMod('m-bill')">&#215;</button></div>
+    <div class="mbd">
+      <div class="rtabs" style="margin-bottom:18px;">
+        <button class="rt act" onclick="setBT('normal',this)">Normal Bill</button>
+        <button class="rt" onclick="setBT('gst',this)">GST Bill</button>
+      </div>
+      <div class="g2">
+        <div class="fg"><label>Customer Name *</label><input type="text" id="b-cn" placeholder="Poora naam" /></div>
+        <div class="fg"><label>Mobile Number *</label><div class="pfx"><span>+91</span><input type="tel" id="b-cp" placeholder="10-digit" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" /></div></div>
+        <div class="fg"><label>Email (optional)</label><input type="email" id="b-ce" placeholder="customer@email.com" /></div>
+        <div class="fg"><label>Bill Date</label><input type="date" id="b-dt" /></div>
+        <div class="fg"><label>Bill Number</label><input type="text" id="b-bn" /></div>
+        <div class="fg" id="fg-gr" style="display:none;"><label>GST Rate</label>
+          <select id="b-gr" onchange="rbill()"><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select>
+        </div>
+        <div class="fg" id="fg-og" style="display:none;"><label>Our GSTIN</label><input type="text" id="b-og" value="05CHKPK7267G1Z2" readonly style="opacity:.7;" /></div>
+        <div class="fg" id="fg-cg" style="display:none;"><label>Customer GSTIN (optional)</label><input type="text" id="b-cg" placeholder="Customer GST number" /></div>
+        <div class="fg gcol"><label>Customer Address</label><input type="text" id="b-ca" placeholder="Address" /></div>
+      </div>
+      <div class="dv"></div>
+      <h4 style="margin-bottom:9px;">Services / Items</h4>
+      <div style="display:grid;grid-template-columns:1fr 58px 88px 30px;gap:6px;margin-bottom:5px;">
+        <span style="font-size:11px;color:var(--gray);">Description</span>
+        <span style="font-size:11px;color:var(--gray);">Qty</span>
+        <span style="font-size:11px;color:var(--gray);">Amount</span>
+        <span></span>
+      </div>
+      <div id="b-items"></div>
+      <button class="iaddbtn" onclick="addItem()">+ Add Item</button>
+      <div class="bsum">
+        <div class="bsr"><span>Subtotal</span><span id="bs-s">Rs.0.00</span></div>
+        <div class="bsr" id="bsr-c" style="display:none;"><span>CGST (<span id="bs-cr">9</span>%)</span><span id="bs-cv">Rs.0.00</span></div>
+        <div class="bsr" id="bsr-g" style="display:none;"><span>SGST (<span id="bs-gr2">9</span>%)</span><span id="bs-gv">Rs.0.00</span></div>
+        <div class="bsr"><span>Discount</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="b-disc" min="0" placeholder="0" oninput="rbill()" style="width:64px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--white);font-size:12px;outline:none;" /> Rs.</span></div>
+        <div class="bsr tot"><span>TOTAL</span><span id="bs-t">Rs.0.00</span></div>
+      </div>
+      <div class="dv"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h4>Terms &amp; Conditions</h4>
+        <button class="btn bgh bsm" onclick="selAllTC()">Select All</button>
+      </div>
+      <div class="tcg" id="tcg"></div>
+    </div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-bill')">Cancel</button>
+      <button class="btn bo" onclick="previewBill()">&#128065; Preview</button>
+      <button class="btn bp" onclick="saveBill()">&#9989; Save &amp; Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW BILL -->
+<div class="mov" id="m-view" onclick="clov(event,this)">
+  <div class="modal" style="max-width:680px;">
+    <div class="mhd"><h3>Bill</h3><button class="mx" onclick="closeMod('m-view')">&#215;</button></div>
+    <div class="mbd"><div id="vba"></div></div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-view')">Close</button>
+      <button class="btn bp" onclick="prtBill()">&#128424; Print / PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TECHNICIAN -->
+<div class="mov" id="m-addtech" onclick="clov(event,this)">
+  <div class="modal" style="max-width:440px;">
+    <div class="mhd"><h3>Add Technician</h3><button class="mx" onclick="closeMod('m-addtech')">&#215;</button></div>
+    <div class="mbd">
+      <div class="fg"><label>Full Name *</label><input type="text" id="nt-n" placeholder="Technician name" /></div>
+      <div class="fg"><label>Mobile Number *</label><input type="tel" id="nt-p" placeholder="9876543210" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" /></div>
+      <div class="fg"><label>Password *</label><input type="password" id="nt-pw" placeholder="Min 4 characters" /></div>
+    </div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-addtech')">Cancel</button>
+      <button class="btn bp" onclick="addTech()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE COMPLAINT (Admin) -->
+<div class="mov" id="m-mcomp" onclick="clov(event,this)">
+  <div class="modal" style="max-width:500px;">
+    <div class="mhd"><h3>Manage Complaint</h3><button class="mx" onclick="closeMod('m-mcomp')">&#215;</button></div>
+    <div class="mbd">
+      <div id="mc-det"></div>
+      <div class="dv"></div>
+      <div class="fg"><label>Assign To Technician</label><select id="mc-asgn"></select></div>
+      <div class="fg"><label>Status Update</label>
+        <select id="mc-st"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option></select>
+      </div>
+      <div class="fg"><label>Note (for technician)</label><textarea id="mc-note" placeholder="Instructions ya notes..."></textarea></div>
+      <input type="hidden" id="mc-id" />
+    </div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-mcomp')">Cancel</button>
+      <button class="btn bp" onclick="updateComp()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW COMPLAINT (Customer) -->
+<div class="mov" id="m-newcomp" onclick="clov(event,this)">
+  <div class="modal" style="max-width:480px;">
+    <div class="mhd"><h3>New Complaint Register Karein</h3><button class="mx" onclick="closeMod('m-newcomp')">&#215;</button></div>
+    <div class="mbd">
+      <div class="fg"><label>Issue Description *</label><textarea id="nc-iss" placeholder="Apni problem likhen... (e.g. AC cooling nahi kar raha)" style="min-height:90px;"></textarea></div>
+      <div class="fg"><label>Related Bill (Optional)</label><select id="nc-bill"><option value="">-- Bill select karein --</option></select></div>
+      <div class="fg"><label>Preferred Visit Date</label><input type="date" id="nc-dt" /></div>
+    </div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-newcomp')">Cancel</button>
+      <button class="btn ba" onclick="submitComp()">Submit Complaint</button>
+    </div>
+  </div>
+</div>
+
+<!-- TECH UPDATE COMPLAINT -->
+<div class="mov" id="m-tucomp" onclick="clov(event,this)">
+  <div class="modal" style="max-width:440px;">
+    <div class="mhd"><h3>Update Complaint</h3><button class="mx" onclick="closeMod('m-tucomp')">&#215;</button></div>
+    <div class="mbd">
+      <div id="tu-det"></div><div class="dv"></div>
+      <div class="fg"><label>Status</label><select id="tu-st"><option value="in_progress">In Progress</option><option value="resolved">Resolved</option></select></div>
+      <div class="fg"><label>Progress Note</label><textarea id="tu-note" placeholder="Kya kaam kiya..."></textarea></div>
+      <input type="hidden" id="tu-id" />
+    </div>
+    <div class="mft">
+      <button class="btn bgh" onclick="closeMod('m-tucomp')">Cancel</button>
+      <button class="btn bg" onclick="techUpdComp()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════
+// ║  KRAPS CARE SMART SYSTEM
+// ║  Backend: localStorage (no CDN needed)
+// ╚══════════════════════════════════════════
+
+// ── DB HELPERS ──────────────────────────────
+const DB = {
+  get: k => { try { return JSON.parse(localStorage.getItem('kc_'+k)||'null'); } catch(e){ return null; } },
+  set: (k,v) => localStorage.setItem('kc_'+k, JSON.stringify(v)),
+  push: (k,item) => { const a = DB.get(k)||[]; item.id = item.id||'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); a.push(item); DB.set(k,a); return item; },
+  update: (k,id,upd) => { const a = DB.get(k)||[]; const i = a.findIndex(x=>x.id===id); if(i>-1){ a[i]={...a[i],...upd}; DB.set(k,a); return a[i]; } return null; },
+  delete: (k,id) => { const a = (DB.get(k)||[]).filter(x=>x.id!==id); DB.set(k,a); },
+  find: (k,fn) => (DB.get(k)||[]).find(fn)||null,
+  filter: (k,fn) => (DB.get(k)||[]).filter(fn)
+};
+
+// ── SEED DEFAULT DATA ───────────────────────
+function seedData() {
+  if (DB.get('seeded')) return;
+  // Admin credentials
+  DB.set('admin', { username:'admin', password:'admin123', name:'Kraps Admin' });
+  // Default technicians
+  DB.push('techs', { id:'tech1', name:'Kurhi Refrigeration (Admin)', phone:'9258601527', password:'tech123', active:true, createdAt: ts() });
+  DB.push('techs', { id:'tech2', name:'Technician 2', phone:'9410168261', password:'tech456', active:true, createdAt: ts() });
+  DB.set('seeded', true);
+}
+
+// ── STATE ────────────────────────────────────
+let CU = null; // current user
+let CR = null; // current role
+let curBillType = 'normal';
+let viewBillData = null;
+let otpData = null;
+
+const TERMS = [
+  'Yeh bill sirf is service ke liye valid hai.',
+  'Service ke baad koi claim 7 din ke andar karna hoga.',
+  'Purze (parts) par warranty manufacturer ke niyamon ke anusar hogi.',
+  'Ek baar ki gayi payment wapas nahi hogi.',
+  'Agar grahak ne khud se machine ko haath lagaya to warranty samapt ho jayegi.',
+  'Company kisi bhi electrical durghatna ke liye zimmedar nahi hogi jo hamari service ke baad hui ho.',
+  'Gas refilling par 30 din ki guarantee di jayegi.',
+  'Service charge mein aane-jaane ka kiraya shamil hai.',
+  'Kisi bhi vivad ki sthiti mein Haridwar court ka adhikar kshetra manya hoga.',
+  'Yeh ek computer generated invoice hai.'
+];
+
+// ── INIT ─────────────────────────────────────
+window.onload = function() {
+  seedData();
+  // Restore session
+  const sess = DB.get('session');
+  if (sess) {
+    CU = sess.user; CR = sess.role;
+    if (CR === 'admin') showAdmin();
+    else if (CR === 'tech') showTech();
+    else if (CR === 'customer') showCust();
+    else showWelcome();
+  } else {
+    showWelcome();
+  }
+  hide('loader');
+};
+
+// ── AUTH ─────────────────────────────────────
+function rtab(role, btn) {
+  qa('.rt').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  qa('.lp').forEach(p=>p.classList.remove('act'));
+  v('lp-'+role).classList.add('act');
+}
+
+function loginAdmin() {
+  const user = v('a-user').value.trim();
+  const pass = v('a-pass').value;
+  const adm = DB.get('admin');
+  if (user === adm.username && pass === adm.password) {
+    CU = { role:'admin', name: adm.name||'Admin', username: user };
+    CR = 'admin';
+    DB.set('session', { user:CU, role:CR });
+    showAdmin();
+  } else {
+    toast('Wrong username ya password!', 'e');
+  }
+}
+
+function loginTech() {
+  const phone = v('t-phone').value.trim();
+  const pass  = v('t-pass').value;
+  const tech = DB.find('techs', t => t.phone === phone && t.password === pass && t.active !== false);
+  if (tech) {
+    CU = { ...tech, role:'tech' };
+    CR = 'tech';
+    DB.set('session', { user:CU, role:CR });
+    showTech();
+  } else {
+    toast('Wrong number ya password, ya account inactive hai!', 'e');
+  }
+}
+
+function sendOTP() {
+  const phone = v('c-phone').value.trim();
+  if (phone.length !== 10) { toast('Valid 10-digit number daalen', 'e'); return; }
+  // Check customer exists (auto-created when bill generated)
+  const cust = DB.find('customers', c => c.phone === phone);
+  if (!cust) { toast('Aapka number registered nahi hai. Pehle technician se bill banwayein.', 'e'); return; }
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  otpData = { phone, otp, exp: Date.now() + 10*60*1000 };
+  v('otp-show').textContent = otp;
+  v('cs1').style.display = 'none';
+  v('cs2').style.display = 'block';
+  toast('OTP generate ho gaya!', 'i');
+}
+
+function verifyOTP() {
+  const entered = v('otp-in').value.trim();
+  if (!otpData) { toast('Pehle OTP bhejein', 'e'); return; }
+  if (Date.now() > otpData.exp) { toast('OTP expired! Dobara bhejein.', 'e'); resetOTP(); return; }
+  if (entered !== otpData.otp) { toast('Wrong OTP!', 'e'); return; }
+  const cust = DB.find('customers', c => c.phone === otpData.phone);
+  CU = { ...cust, role:'customer' };
+  CR = 'customer';
+  DB.set('session', { user:CU, role:CR });
+  otpData = null;
+  showCust();
+}
+
+function resetOTP() {
+  v('cs1').style.display = 'block';
+  v('cs2').style.display = 'none';
+  v('otp-in').value = '';
+  v('otp-show').textContent = '------';
+  otpData = null;
+}
+
+function doLogout() {
+  DB.set('session', null);
+  CU = null; CR = null;
+  showWelcome();
+  toast('Logout ho gaye', 's');
+}
+
+// ── ADMIN ────────────────────────────────────
+function showAdmin() {
+  v('a-av').textContent = (CU.name||'A').charAt(0).toUpperCase();
+  v('a-nm').textContent = CU.name||'Admin';
+  showScr('sa');
+  loadAdminData();
+}
+
+function loadAdminData() {
+  const bills = DB.get('bills')||[];
+  const comps = DB.get('complaints')||[];
+  const techs = DB.get('techs')||[];
+  const custs = DB.get('customers')||[];
+  const rev = bills.reduce((s,b)=>s+(b.total||0),0);
+  const pend = comps.filter(c=>c.status!=='resolved').length;
+  v('st-b').textContent = bills.length;
+  v('st-r').textContent = 'Rs.'+rev.toFixed(0);
+  v('st-c').textContent = pend;
+  v('st-t').textContent = techs.filter(t=>t.active!==false).length;
+  // Overview recent bills
+  const rb = bills.slice(-5).reverse();
+  v('ov-rbills').innerHTML = rb.length ? rb.map(b=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div><div style="font-size:13px;font-weight:700;">${esc(b.customerName)}</div>
+      <div style="font-size:11px;color:var(--gray);">${esc(b.billNo)} &bull; ${fdt(b.createdAt)}</div></div>
+      <div style="text-align:right;"><div style="font-weight:900;color:var(--green);">Rs.${(b.total||0).toFixed(0)}</div>
+      <span class="badge ${b.type==='gst'?'bam':'bbl'}">${b.type==='gst'?'GST':'Normal'}</span></div>
+    </div>`).join('') : '<div class="empty"><div class="ei">&#128196;</div><p>No bills yet</p></div>';
+  // Open complaints
+  const oc = comps.filter(c=>c.status!=='resolved').slice(-4).reverse();
+  v('ov-rcomp').innerHTML = oc.length ? oc.map(c=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div><div style="font-size:13px;font-weight:700;">${esc(c.customerName)}</div>
+      <div style="font-size:11px;color:var(--gray);">${esc((c.issue||'').slice(0,40))}...</div></div>
+      ${sbadge(c.status)}
+    </div>`).join('') : '<div class="empty"><div class="ei">&#128172;</div><p>No open complaints</p></div>';
+  // Bills table
+  renderBillsTbl(bills.slice().reverse(), 'atb', true);
+  // Complaints table
+  renderCompTbl(comps.slice().reverse(), 'actb', true);
+  // Techs table
+  v('attb').innerHTML = techs.map(t=>{
+    const bc = bills.filter(b=>b.techId===t.id).length;
+    return `<tr>
+      <td><strong>${esc(t.name)}</strong></td>
+      <td>${esc(t.phone)}</td>
+      <td style="font-size:11px;color:var(--gray);">${t.password}</td>
+      <td><span class="badge ${t.active!==false?'bgr':'brd'}">${t.active!==false?'Active':'Inactive'}</span></td>
+      <td style="color:var(--elec);font-weight:700;">${bc}</td>
+      <td><button class="btn bsm ${t.active!==false?'br':'bg'}" onclick="toggleTech('${t.id}',${t.active!==false})">${t.active!==false?'Deactivate':'Activate'}</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6"><div class="empty"><p>No technicians</p></div></td></tr>';
+  // Customers
+  v('actb2').innerHTML = custs.map(c=>{
+    const bc = bills.filter(b=>b.customerPhone===c.phone).length;
+    const cc = comps.filter(x=>x.customerId===c.id).length;
+    return `<tr>
+      <td><strong>${esc(c.name)}</strong></td>
+      <td>${esc(c.phone)}</td>
+      <td style="color:var(--elec);font-weight:700;">${bc}</td>
+      <td style="color:var(--amber);font-weight:700;">${cc}</td>
+      <td style="font-size:12px;color:var(--gray);">${fdt(c.createdAt)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5"><div class="empty"><p>No customers</p></div></td></tr>';
+}
+
+function renderBillsTbl(bills, tbid, isAdmin) {
+  v(tbid).innerHTML = bills.map(b=>`<tr>
+    <td><strong>${esc(b.billNo)}</strong></td>
+    <td>${esc(b.customerName)}</td>
+    <td>${esc(b.customerPhone)}</td>
+    ${isAdmin?`<td style="font-size:12px;color:var(--gray);">${esc(b.techName||'')}</td>`:''}
+    <td style="color:var(--green);font-weight:900;">Rs.${(b.total||0).toFixed(0)}</td>
+    <td><span class="badge ${b.type==='gst'?'bam':'bbl'}">${b.type==='gst'?'GST':'Normal'}</span></td>
+    <td style="font-size:12px;color:var(--gray);">${fdt(b.createdAt)}</td>
+    <td><button class="btn bo bsm" onclick="viewBill('${b.id}')">View</button></td>
+  </tr>`).join('') || `<tr><td colspan="${isAdmin?8:7}"><div class="empty"><p>No bills</p></div></td></tr>`;
+}
+
+function renderCompTbl(comps, tbid, isAdmin) {
+  v(tbid).innerHTML = comps.map(c=>`<tr>
+    <td style="font-size:11px;color:var(--gray);">#${c.id.slice(-5).toUpperCase()}</td>
+    <td>${esc(c.customerName)}<br><span style="font-size:11px;color:var(--gray);">${esc(c.customerPhone||'')}</span></td>
+    <td style="max-width:180px;font-size:12px;">${esc((c.issue||'').slice(0,55))}${(c.issue||'').length>55?'...':''}</td>
+    <td>${sbadge(c.status)}</td>
+    ${isAdmin?`<td style="font-size:12px;color:var(--gray);">${esc(c.assignedToName||'Unassigned')}</td>`:''}
+    <td style="font-size:11px;color:var(--gray);">${fdt(c.createdAt)}</td>
+    <td>${isAdmin
+      ? `<button class="btn bgh bsm" onclick="openManageComp('${c.id}')">Manage</button>`
+      : `<button class="btn bgh bsm" onclick="openTechComp('${c.id}')">Update</button>`
+    }</td>
+  </tr>`).join('') || `<tr><td colspan="${isAdmin?7:6}"><div class="empty"><p>No complaints</p></div></td></tr>`;
+}
+
+function anav(id, btn) {
+  qa('#sa .ni').forEach(b=>b.classList.remove('act'));
+  qa('#sa .panel').forEach(p=>p.classList.remove('act','fadein'));
+  btn.classList.add('act');
+  v('p-'+id).classList.add('act','fadein');
+}
+
+function searchBills() {
+  const q = v('bsrch').value.toLowerCase();
+  const bills = (DB.get('bills')||[]).filter(b=>
+    (b.customerName||'').toLowerCase().includes(q)||(b.billNo||'').includes(q)||(b.customerPhone||'').includes(q)
+  ).reverse();
+  renderBillsTbl(bills, 'atb', true);
+}
+
+let cfilterVal = 'all';
+function cfilter(val, btn) {
+  qa('.cff').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  cfilterVal = val;
+  let comps = (DB.get('complaints')||[]).slice().reverse();
+  if (val !== 'all') comps = comps.filter(c=>c.status===val);
+  renderCompTbl(comps, 'actb', true);
+}
+
+function toggleTech(id, active) {
+  DB.update('techs', id, { active: !active });
+  toast('Status update ho gaya', 's');
+  loadAdminData();
+}
+
+function openManageComp(id) {
+  const c = DB.find('complaints', x=>x.id===id);
+  if (!c) return;
+  v('mc-id').value = id;
+  v('mc-st').value = c.status||'pending';
+  v('mc-note').value = '';
+  v('mc-det').innerHTML = `<div class="card" style="padding:13px;">
+    <div style="font-weight:700;margin-bottom:5px;">${esc(c.customerName)} &bull; ${esc(c.customerPhone||'')}</div>
+    <div style="font-size:13px;color:#c0cfe4;line-height:1.6;">${esc(c.issue)}</div>
+    ${c.adminNote?`<div style="font-size:11px;color:var(--amber);margin-top:7px;">Previous note: ${esc(c.adminNote)}</div>`:''}
+  </div>`;
+  const techs = (DB.get('techs')||[]).filter(t=>t.active!==false);
+  v('mc-asgn').innerHTML = '<option value="">-- Technician select karein --</option>' +
+    techs.map(t=>`<option value="${t.id}" ${c.assignedTo===t.id?'selected':''}>${esc(t.name)}</option>`).join('');
+  openMod('m-mcomp');
+}
+
+function updateComp() {
+  const id   = v('mc-id').value;
+  const stat = v('mc-st').value;
+  const asgn = v('mc-asgn').value;
+  const note = v('mc-note').value.trim();
+  const tech = asgn ? DB.find('techs', t=>t.id===asgn) : null;
+  DB.update('complaints', id, {
+    status: stat, updatedAt: ts(),
+    ...(asgn ? { assignedTo: asgn, assignedToName: tech?.name||'' } : {}),
+    ...(note ? { adminNote: note } : {})
+  });
+  closeMod('m-mcomp');
+  toast('Complaint updated!', 's');
+  loadAdminData();
+}
+
+function addTech() {
+  const name = v('nt-n').value.trim();
+  const phone = v('nt-p').value.trim();
+  const pass  = v('nt-pw').value;
+  if (!name||phone.length!==10||pass.length<4) { toast('Sab fields sahi bharen (password min 4 chars)', 'e'); return; }
+  if (DB.find('techs', t=>t.phone===phone)) { toast('Yeh number pehle se registered hai', 'e'); return; }
+  DB.push('techs', { name, phone, password:pass, active:true, createdAt:ts() });
+  closeMod('m-addtech');
+  toast('Technician add ho gaya!', 's');
+  v('nt-n').value=''; v('nt-p').value=''; v('nt-pw').value='';
+  loadAdminData();
+}
+
+// ── TECH ─────────────────────────────────────
+function showTech() {
+  v('t-av').textContent = (CU.name||'T').charAt(0).toUpperCase();
+  v('t-nm').textContent = CU.name;
+  showScr('st');
+  loadTechData();
+}
+
+function loadTechData() {
+  const bills = DB.filter('bills', b=>b.techId===CU.id).reverse();
+  const comps = DB.filter('complaints', c=>c.assignedTo===CU.id).reverse();
+  const rev = bills.reduce((s,b)=>s+(b.total||0),0);
+  v('ts-b').textContent = bills.length;
+  v('ts-r').textContent = 'Rs.'+rev.toFixed(0);
+  v('ts-c').textContent = comps.length;
+  // Recent bills
+  const rbl = bills.slice(0,5);
+  v('t-rbills').innerHTML = rbl.length ? `<div class="tw"><table><thead><tr><th>Bill No</th><th>Customer</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody>` +
+    rbl.map(b=>`<tr>
+      <td><strong>${esc(b.billNo)}</strong></td>
+      <td>${esc(b.customerName)}<br><span style="font-size:11px;color:var(--gray);">${esc(b.customerPhone)}</span></td>
+      <td style="color:var(--green);font-weight:900;">Rs.${(b.total||0).toFixed(0)}</td>
+      <td style="font-size:12px;color:var(--gray);">${fdt(b.createdAt)}</td>
+      <td><button class="btn bo bsm" onclick="viewBill('${b.id}')">View</button></td>
+    </tr>`).join('') + '</tbody></table></div>'
+    : '<div class="empty"><div class="ei">&#128196;</div><p>Koi bill nahi abhi tak</p></div>';
+  renderBillsTbl(bills, 'ttb', false);
+  renderCompTbl(comps, 'tctb', false);
+}
+
+function tnav(id, btn) {
+  qa('#st .ni').forEach(b=>b.classList.remove('act'));
+  qa('#st .panel').forEach(p=>p.classList.remove('act','fadein'));
+  btn.classList.add('act');
+  v('tp-'+id).classList.add('act','fadein');
+}
+
+function openTechComp(id) {
+  const c = DB.find('complaints', x=>x.id===id);
+  if (!c) return;
+  v('tu-id').value = id;
+  v('tu-st').value = c.status==='resolved'?'resolved':'in_progress';
+  v('tu-note').value = '';
+  v('tu-det').innerHTML = `<div style="padding:11px;background:rgba(255,255,255,.03);border-radius:8px;">
+    <div style="font-weight:700;margin-bottom:5px;">${esc(c.customerName)}</div>
+    <div style="font-size:13px;color:#c0cfe4;">${esc(c.issue)}</div>
+    ${c.adminNote?`<div style="font-size:11px;color:var(--amber);margin-top:7px;">Admin note: ${esc(c.adminNote)}</div>`:''}
+  </div>`;
+  openMod('m-tucomp');
+}
+
+function techUpdComp() {
+  const id   = v('tu-id').value;
+  const stat = v('tu-st').value;
+  const note = v('tu-note').value.trim();
+  DB.update('complaints', id, { status:stat, updatedAt:ts(), ...(note?{techNote:note}:{}) });
+  closeMod('m-tucomp');
+  toast('Complaint updated!', 's');
+  loadTechData();
+}
+
+// ── CUSTOMER ─────────────────────────────────
+function showCust() {
+  v('c-av').textContent = (CU.name||'C').charAt(0).toUpperCase();
+  v('c-nm').textContent = CU.name || ('+91 '+CU.phone);
+  showScr('sc');
+  loadCustData();
+}
+
+function loadCustData() {
+  const bills = DB.filter('bills', b=>b.customerPhone===CU.phone).reverse();
+  const comps = DB.filter('complaints', c=>c.customerId===CU.id).reverse();
+  // Bills
+  const bl = v('c-blist');
+  bl.innerHTML = bills.length ? bills.map(b=>`
+    <div class="card" style="margin-bottom:11px;">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;">
+        <div>
+          <div style="font-size:16px;font-weight:900;">Rs.${(b.total||0).toFixed(0)}</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">${esc(b.billNo)} &bull; ${fdt(b.createdAt)}</div>
+          <div style="font-size:11px;color:var(--gray);">Technician: ${esc(b.techName||'')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge ${b.type==='gst'?'bam':'bbl'}">${b.type==='gst'?'GST':'Normal'}</span>
+          <button class="btn bo bsm" onclick="viewBill('${b.id}')">View / Print</button>
+        </div>
+      </div>
+      ${b.items&&b.items.length?`<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--border);">${
+        b.items.map(i=>`<div style="font-size:12px;color:var(--gray);">${esc(i.desc)} &mdash; Rs.${((i.qty||1)*(i.amt||0)).toFixed(0)}</div>`).join('')
+      }</div>`:''}
+    </div>`).join('') : '<div class="empty"><div class="ei">&#128196;</div><p>Abhi tak koi bill nahi</p></div>';
+  // Complaints
+  const cl = v('c-clist');
+  cl.innerHTML = comps.length ? comps.map(c=>`
+    <div class="card" style="margin-bottom:11px;">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">${esc(c.issue)}</div>
+          <div style="font-size:11px;color:var(--gray);">#${c.id.slice(-5).toUpperCase()} &bull; ${fdt(c.createdAt)}</div>
+          ${c.assignedToName?`<div style="font-size:11px;color:var(--elec);margin-top:3px;">Assigned to: ${esc(c.assignedToName)}</div>`:''}
+          ${c.adminNote?`<div style="font-size:11px;color:var(--amber);margin-top:3px;">Note: ${esc(c.adminNote)}</div>`:''}
+          ${c.techNote?`<div style="font-size:11px;color:var(--green);margin-top:3px;">Update: ${esc(c.techNote)}</div>`:''}
+        </div>
+        ${sbadge(c.status)}
+      </div>
+    </div>`).join('')
+    : '<div class="empty"><div class="ei">&#128172;</div><p>Koi complaint nahi</p><p style="margin-top:9px;"><button class="btn ba bsm" onclick="openMod(\'m-newcomp\')">+ Complaint Register Karein</button></p></div>';
+  // Populate bill select in complaint modal
+  v('nc-bill').innerHTML = '<option value="">-- Related bill (optional) --</option>' +
+    bills.map(b=>`<option value="${b.id}">${esc(b.billNo)} - Rs.${(b.total||0).toFixed(0)} (${fdt(b.createdAt)})</option>`).join('');
+}
+
+function cnav(id, btn) {
+  qa('#sc .ni').forEach(b=>b.classList.remove('act'));
+  qa('#sc .panel').forEach(p=>p.classList.remove('act','fadein'));
+  btn.classList.add('act');
+  v('cp-'+id).classList.add('act','fadein');
+}
+
+function submitComp() {
+  const issue = v('nc-iss').value.trim();
+  const billId = v('nc-bill').value;
+  const dt = v('nc-dt').value;
+  if (!issue) { toast('Issue description daalen', 'e'); return; }
+  DB.push('complaints', {
+    customerId: CU.id, customerName: CU.name||('Customer '+CU.phone), customerPhone:CU.phone,
+    issue, billId:billId||'', preferredDate:dt||'',
+    status:'pending', assignedTo:'', assignedToName:'',
+    createdAt:ts(), updatedAt:ts()
+  });
+  closeMod('m-newcomp');
+  v('nc-iss').value=''; v('nc-bill').value=''; v('nc-dt').value='';
+  toast('Complaint register ho gayi! Jald contact karenge.', 's');
+  loadCustData();
+}
+
+// ── BILL GENERATION ───────────────────────────
+function initBillForm() {
+  const today = new Date().toISOString().split('T')[0];
+  v('b-dt').value = today;
+  v('b-bn').value = 'KC-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900)+100);
+  curBillType = 'normal';
+  v('b-items').innerHTML = '';
+  v('b-disc').value = '';
+  v('b-cn').value=''; v('b-cp').value=''; v('b-ce').value=''; v('b-ca').value=''; v('b-cg').value='';
+  addItem();
+  rbill();
+  // Terms
+  v('tcg').innerHTML = TERMS.map((t,i)=>`
+    <label class="tcc">
+      <input type="checkbox" value="${esc(t)}" />
+      <span>${i+1}. ${esc(t)}</span>
+    </label>`).join('');
+}
+
+function setBT(type, btn) {
+  curBillType = type;
+  qa('#m-bill .rt').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  const g = type==='gst';
+  ['fg-gr','fg-og','fg-cg','bsr-c','bsr-g'].forEach(id=>v(id).style.display=g?'':'none');
+  rbill();
+}
+
+function addItem() {
+  const id = 'bi'+Date.now();
+  const d = document.createElement('div');
+  d.className='ir'; d.id=id;
+  d.innerHTML='<input type="text" placeholder="Service description" oninput="rbill()" />'+
+    '<input type="number" placeholder="1" min="1" value="1" oninput="rbill()" />'+
+    '<input type="number" placeholder="0.00" min="0" step="0.01" oninput="rbill()" />'+
+    '<button class="idel" onclick="delItem(\''+id+'\')">&#215;</button>';
+  v('b-items').appendChild(d);
+}
+function delItem(id) { const e=v(id); if(e)e.parentNode.removeChild(e); rbill(); }
+
+function gItems() {
+  return Array.from(qa('#b-items .ir')).map(r=>{
+    const ins=r.querySelectorAll('input');
+    return { desc:ins[0].value, qty:parseFloat(ins[1].value)||1, amt:parseFloat(ins[2].value)||0 };
+  });
+}
+function rbill() {
+  const items=gItems(), sub=items.reduce((s,i)=>s+i.qty*i.amt,0);
+  const disc=parseFloat(v('b-disc').value)||0;
+  let tot=sub-disc;
+  if (curBillType==='gst') {
+    const rate=parseFloat(v('b-gr').value)||18, h=rate/2;
+    const cg=sub*h/100, sg=sub*h/100;
+    tot=sub+cg+sg-disc;
+    v('bs-cr').textContent=h; v('bs-gr2').textContent=h;
+    v('bs-cv').textContent='Rs.'+cg.toFixed(2); v('bs-gv').textContent='Rs.'+sg.toFixed(2);
+  }
+  v('bs-s').textContent='Rs.'+sub.toFixed(2);
+  v('bs-t').textContent='Rs.'+Math.max(0,tot).toFixed(2);
+}
+function gTerms() { return Array.from(qa('#tcg input:checked')).map(c=>c.value); }
+function selAllTC() {
+  const boxes=qa('#tcg input[type=checkbox]');
+  const all=Array.from(boxes).every(b=>b.checked);
+  boxes.forEach(b=>b.checked=!all);
+}
+
+function saveBill() {
+  const name=v('b-cn').value.trim(), phone=v('b-cp').value.trim();
+  if (!name||phone.length!==10) { toast('Customer naam aur valid phone daalen', 'e'); return; }
+  const items=gItems(), sub=items.reduce((s,i)=>s+i.qty*i.amt,0);
+  const disc=parseFloat(v('b-disc').value)||0;
+  let tot=sub-disc, cg=0, sg=0, rate=0;
+  if (curBillType==='gst') {
+    rate=parseFloat(v('b-gr').value)||18;
+    cg=sub*(rate/2)/100; sg=cg;
+    tot=sub+cg+sg-disc;
+  }
+  const bill = {
+    billNo: v('b-bn').value||'KC-'+Date.now(), type:curBillType,
+    customerName:name, customerPhone:phone, customerEmail:v('b-ce').value.trim(),
+    customerAddr:v('b-ca').value.trim(), customerGstin:v('b-cg').value.trim(),
+    ourGstin:'05CHKPK7267G1Z2', msme:'UDYAM-UK-06-0091473',
+    items, subtotal:sub, discount:disc, gstRate:rate, cgst:cg, sgst:sg,
+    total:Math.max(0,tot), terms:gTerms(),
+    techId:CU.id, techName:CU.name||'', billDate:v('b-dt').value, createdAt:ts()
+  };
+  DB.push('bills', bill);
+  // Auto-create customer
+  if (!DB.find('customers', c=>c.phone===phone)) {
+    DB.push('customers', { name, phone, email:v('b-ce').value.trim(), createdAt:ts() });
+  }
+  closeMod('m-bill');
+  toast('Bill save ho gaya! Customer account auto-create ho gaya.', 's');
+  if (CR==='admin') loadAdminData();
+  else loadTechData();
+}
+
+// ── VIEW & PRINT ──────────────────────────────
+function viewBill(id) {
+  const b = DB.find('bills', x=>x.id===id);
+  if (!b) return;
+  viewBillData = b;
+  v('vba').innerHTML = buildBillHTML(b);
+  openMod('m-view');
+}
+
+function previewBill() {
+  const items=gItems(), sub=items.reduce((s,i)=>s+i.qty*i.amt,0);
+  const disc=parseFloat(v('b-disc').value)||0;
+  let tot=sub-disc, cg=0, sg=0, rate=0;
+  if (curBillType==='gst') {
+    rate=parseFloat(v('b-gr').value)||18; cg=sub*(rate/2)/100; sg=cg; tot=sub+cg+sg-disc;
+  }
+  const b = {
+    billNo:v('b-bn').value, type:curBillType,
+    customerName:v('b-cn').value, customerPhone:v('b-cp').value,
+    customerAddr:v('b-ca').value, customerGstin:v('b-cg').value||'',
+    ourGstin:'05CHKPK7267G1Z2', msme:'UDYAM-UK-06-0091473',
+    items, subtotal:sub, discount:disc, gstRate:rate, cgst:cg, sgst:sg,
+    total:Math.max(0,tot), terms:gTerms(), techName:CU.name||'', billDate:v('b-dt').value
+  };
+  viewBillData = b;
+  v('vba').innerHTML = buildBillHTML(b);
+  openMod('m-view');
+}
+
+function buildBillHTML(b) {
+  const isG = b.type==='gst';
+  const rows = (b.items||[]).map((it,i)=>`
+    <tr><td>${i+1}</td><td>${esc(it.desc||'-')}</td><td>${it.qty||1}</td>
+    <td>Rs.${(it.amt||0).toFixed(2)}</td><td>Rs.${((it.qty||1)*(it.amt||0)).toFixed(2)}</td></tr>`).join('');
+  let sum=`<tr><td colspan="2" style="text-align:right;padding:6px 10px;">Subtotal</td><td style="padding:6px 10px;">Rs.${(b.subtotal||0).toFixed(2)}</td></tr>`;
+  if (isG) {
+    const h=(b.gstRate||18)/2;
+    sum+=`<tr><td colspan="2" style="text-align:right;padding:5px 10px;">CGST @ ${h}%</td><td style="padding:5px 10px;">Rs.${(b.cgst||0).toFixed(2)}</td></tr>`;
+    sum+=`<tr><td colspan="2" style="text-align:right;padding:5px 10px;">SGST @ ${h}%</td><td style="padding:5px 10px;">Rs.${(b.sgst||0).toFixed(2)}</td></tr>`;
+  }
+  if (b.discount>0) sum+=`<tr><td colspan="2" style="text-align:right;padding:5px 10px;">Discount</td><td style="padding:5px 10px;">-Rs.${b.discount.toFixed(2)}</td></tr>`;
+  sum+=`<tr style="font-weight:900;font-size:15px;color:#1045a1;border-top:2px solid #1045a1;"><td colspan="2" style="text-align:right;padding:10px;">Total</td><td style="padding:10px;">Rs.${(b.total||0).toFixed(2)}</td></tr>`;
+  const tc = b.terms&&b.terms.length ? `<div style="background:#f0f6ff;border-radius:7px;padding:12px 14px;margin-top:14px;">
+    <div style="font-size:10px;font-weight:800;color:#1045a1;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">Terms &amp; Conditions</div>
+    <ol style="margin:0;padding-left:16px;">${b.terms.map(t=>`<li style="font-size:10.5px;color:#333;margin-bottom:4px;line-height:1.5;">${esc(t)}</li>`).join('')}</ol>
+  </div>` : '';
+  return `<div style="font-family:Arial,sans-serif;color:#111;padding:28px;">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-bottom:14px;border-bottom:2px solid #1045a1;margin-bottom:18px;">
+      <div>
+        <div style="font-size:22px;font-weight:900;color:#1045a1;">Kraps Care</div>
+        <div style="font-size:10px;color:#666;letter-spacing:1px;">KURHI REFRIGERATION AND POWER SOLUTIONS</div>
+        <div style="font-size:10px;color:#888;margin-top:2px;">Gali No. 3, Siddhi Vinayak Colony Ph-2, SIDCUL Bypass Rd, Salempur, Haridwar-249402</div>
+        <div style="font-size:10px;color:#888;">Ph: 9258601527 / 9410168261 | krapscare@gmail.com</div>
+        <div style="font-size:10px;color:#1045a1;font-weight:700;margin-top:2px;">${isG?'GSTIN: 05CHKPK7267G1Z2 | ':''}MSME: UDYAM-UK-06-0091473</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:16px;font-weight:800;color:#1045a1;">${isG?'GST TAX INVOICE':'SERVICE INVOICE'}</div>
+        <div style="font-size:11px;color:#555;margin-top:3px;">Bill No: <strong>${esc(b.billNo||'')}</strong></div>
+        <div style="font-size:11px;color:#555;">Date: <strong>${esc(b.billDate||'')}</strong></div>
+        ${b.techName?`<div style="font-size:11px;color:#555;">Tech: ${esc(b.techName)}</div>`:''}
+      </div>
+    </div>
+    <div style="background:#f5f8ff;padding:11px 13px;border-radius:7px;margin-bottom:16px;">
+      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Bill To</div>
+      <div style="font-size:15px;font-weight:700;">${esc(b.customerName||'')}</div>
+      <div style="font-size:12px;color:#555;margin-top:2px;">+91 ${esc(b.customerPhone||'')}${b.customerAddr?' | '+esc(b.customerAddr):''}${isG&&b.customerGstin?' | GSTIN: '+esc(b.customerGstin):''}</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:13px;">
+      <thead><tr style="background:#1045a1;color:#fff;"><th style="padding:8px 10px;font-size:11px;text-align:left;">#</th><th style="padding:8px 10px;font-size:11px;text-align:left;">Description</th><th style="padding:8px 10px;font-size:11px;text-align:left;">Qty</th><th style="padding:8px 10px;font-size:11px;text-align:left;">Rate</th><th style="padding:8px 10px;font-size:11px;text-align:left;">Amount</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="display:flex;justify-content:flex-end;"><table style="min-width:230px;border-collapse:collapse;">${sum}</table></div>
+    ${tc}
+    <div style="margin-top:18px;padding-top:13px;border-top:1px solid #eee;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:11px;color:#888;">
+      <div>Thank you for your business!<br>krapscare@gmail.com | 9258601527</div>
+      <div style="text-align:right;"><div style="border-top:1px solid #333;width:120px;margin:30px 0 3px auto;"></div>Authorised Signatory<br><strong>Kraps Care</strong></div>
+    </div>
+  </div>`;
+}
+
+function prtBill() {
+  if (!viewBillData) return;
+  const html = buildBillHTML(viewBillData);
+  const w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>Invoice - Kraps Care</title><style>body{margin:0;font-family:Arial,sans-serif;}@media print{.np{display:none;}}</style></head><body>'+
+    html+
+    '<div class="np" style="text-align:center;padding:20px;">'+
+    '<button onclick="window.print()" style="padding:11px 24px;background:#1045a1;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer;font-weight:700;">Print / Save as PDF</button> '+
+    '<button onclick="window.close()" style="padding:11px 24px;background:#eee;border:none;border-radius:7px;font-size:14px;cursor:pointer;">Close</button>'+
+    '</div></body></html>');
+  w.document.close();
+}
+
+// ── UTILITIES ─────────────────────────────────
+function v(id) { return document.getElementById(id); }
+function qa(sel) { return document.querySelectorAll(sel); }
+function esc(s) { if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function ts() { return new Date().toISOString(); }
+function fdt(d) {
+  if (!d) return '-';
+  try { const dt=new Date(d); return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  catch(e){return '-';}
+}
+function sbadge(s) {
+  const map={pending:{c:'bam',l:'Pending'},in_progress:{c:'bbl',l:'In Progress'},resolved:{c:'bgr',l:'Resolved'}};
+  const x=map[s]||map.pending;
+  return `<span class="badge ${x.c}">${x.l}</span>`;
+}
+function showScr(id) {
+  qa('.screen').forEach(s=>s.classList.remove('active'));
+  v(id).classList.add('active');
+}
+function showWelcome() { showScr('sw'); }
+function hide(id) { v(id).style.display='none'; }
+
+function openMod(id) {
+  v(id).classList.add('show');
+  if (id==='m-bill') initBillForm();
+}
+function closeMod(id) { v(id).classList.remove('show'); }
+function clov(e, el) { if(e.target===el) el.classList.remove('show'); }
+
+let tt;
+function toast(msg, type='i') {
+  clearTimeout(tt);
+  const ic={s:'✅',e:'❌',i:'ℹ️'};
+  const cls={s:'ts',e:'te',i:'ti'};
+  v('tbox').className='tb2 '+(cls[type]||'ti');
+  v('tbox').innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  v('toast').classList.add('show');
+  tt=setTimeout(()=>v('toast').classList.remove('show'),4200);
+}
+</script>
+</body>
+</html>
