@@ -555,6 +555,40 @@ const DB = {
   filter: (k,fn) => (DB.get(k)||[]).filter(fn)
 };
 
+// Hidden function to check if UI element exists
+function elementExists(id) {
+  return document.getElementById(id) !== null;
+}
+
+// Debug helper - logs all missing elements
+function checkAllElements() {
+  const requiredIds = ['loader', 'toast', 'tbox', 'sw', 'sa', 'st', 'sc', 
+                        'a-av', 'a-nm', 't-av', 't-nm', 'c-av', 'c-nm',
+                        'b-items', 'b-disc', 'b-gr', 'bs-s', 'bs-t'];
+  const missing = requiredIds.filter(id => !elementExists(id));
+  if (missing.length > 0) {
+    console.warn('❌ Missing elements:', missing);
+  } else {
+    console.log('✅ All required elements found');
+  }
+}
+
+function saveDiv(container, html) {
+  if (!container) return false;
+  try {
+    container.innerHTML = html;
+    return true;
+  } catch(e) {
+    console.error('Error updating HTML:', e);
+    return false;
+  }
+}
+
+function setContent(elemId, html) {
+  const elem = v(elemId);
+  return saveDiv(elem, html);
+}
+
 // ── SEED DEFAULT DATA ───────────────────────
 function seedData() {
   if (DB.get('seeded')) return;
@@ -588,19 +622,32 @@ const TERMS = [
 
 // ── INIT ─────────────────────────────────────
 window.onload = function() {
-  seedData();
-  // Restore session
-  const sess = DB.get('session');
-  if (sess) {
-    CU = sess.user; CR = sess.role;
-    if (CR === 'admin') showAdmin();
-    else if (CR === 'tech') showTech();
-    else if (CR === 'customer') showCust();
-    else showWelcome();
-  } else {
+  try {
+    // Debug: check all elements
+    checkAllElements();
+    
+    seedData();
+    // Restore session
+    const sess = DB.get('session');
+    if (sess && sess.user && sess.role) {
+      CU = sess.user; 
+      CR = sess.role;
+      if (CR === 'admin') showAdmin();
+      else if (CR === 'tech') showTech();
+      else if (CR === 'customer') showCust();
+      else showWelcome();
+    } else {
+      showWelcome();
+    }
+  } catch(e) {
+    console.error('Init error:', e);
     showWelcome();
   }
-  hide('loader');
+  
+  const loader = v('loader');
+  if (loader) loader.style.display='none';
+  
+  console.log('✅ System initialized successfully');
 };
 
 // ── AUTH ─────────────────────────────────────
@@ -748,7 +795,12 @@ function loadAdminData() {
 }
 
 function renderBillsTbl(bills, tbid, isAdmin) {
-  v(tbid).innerHTML = bills.map(b=>`<tr>
+  const tbody = v(tbid);
+  if (!tbody) {
+    console.warn(`Table element ${tbid} not found`);
+    return;
+  }
+  tbody.innerHTML = bills.map(b=>`<tr>
     <td><strong>${esc(b.billNo)}</strong></td>
     <td>${esc(b.customerName)}</td>
     <td>${esc(b.customerPhone)}</td>
@@ -761,7 +813,12 @@ function renderBillsTbl(bills, tbid, isAdmin) {
 }
 
 function renderCompTbl(comps, tbid, isAdmin) {
-  v(tbid).innerHTML = comps.map(c=>`<tr>
+  const tbody = v(tbid);
+  if (!tbody) {
+    console.warn(`Table element ${tbid} not found`);
+    return;
+  }
+  tbody.innerHTML = comps.map(c=>`<tr>
     <td style="font-size:11px;color:var(--gray);">#${c.id.slice(-5).toUpperCase()}</td>
     <td>${esc(c.customerName)}<br><span style="font-size:11px;color:var(--gray);">${esc(c.customerPhone||'')}</span></td>
     <td style="max-width:180px;font-size:12px;">${esc((c.issue||'').slice(0,55))}${(c.issue||'').length>55?'...':''}</td>
@@ -783,7 +840,9 @@ function anav(id, btn) {
 }
 
 function searchBills() {
-  const q = v('bsrch').value.toLowerCase();
+  const searchElem = v('bsrch');
+  if (!searchElem) return;
+  const q = searchElem.value.toLowerCase();
   const bills = (DB.get('bills')||[]).filter(b=>
     (b.customerName||'').toLowerCase().includes(q)||(b.billNo||'').includes(q)||(b.customerPhone||'').includes(q)
   ).reverse();
@@ -1029,24 +1088,37 @@ function addItem() {
 function delItem(id) { const e=v(id); if(e)e.parentNode.removeChild(e); rbill(); }
 
 function gItems() {
-  return Array.from(qa('#b-items .ir')).map(r=>{
+  const container = v('b-items');
+  if (!container) return [];
+  return Array.from(container.querySelectorAll('.ir')).map(r=>{
     const ins=r.querySelectorAll('input');
-    return { desc:ins[0].value, qty:parseFloat(ins[1].value)||1, amt:parseFloat(ins[2].value)||0 };
+    return { desc:ins[0]?.value||'', qty:parseFloat(ins[1]?.value)||1, amt:parseFloat(ins[2]?.value)||0 };
   });
 }
 function rbill() {
   const items=gItems(), sub=items.reduce((s,i)=>s+i.qty*i.amt,0);
-  const disc=parseFloat(v('b-disc').value)||0;
+  const discElem = v('b-disc');
+  const disc=discElem ? parseFloat(discElem.value)||0 : 0;
   let tot=sub-disc;
   if (curBillType==='gst') {
-    const rate=parseFloat(v('b-gr').value)||18, h=rate/2;
+    const grElem = v('b-gr');
+    const rate=grElem ? parseFloat(grElem.value)||18 : 18;
+    const h=rate/2;
     const cg=sub*h/100, sg=sub*h/100;
     tot=sub+cg+sg-disc;
-    v('bs-cr').textContent=h; v('bs-gr2').textContent=h;
-    v('bs-cv').textContent='Rs.'+cg.toFixed(2); v('bs-gv').textContent='Rs.'+sg.toFixed(2);
+    const bsCrElem = v('bs-cr');
+    const bsGr2Elem = v('bs-gr2');
+    const bsCvElem = v('bs-cv');
+    const bsGvElem = v('bs-gv');
+    if (bsCrElem) bsCrElem.textContent=h; 
+    if (bsGr2Elem) bsGr2Elem.textContent=h;
+    if (bsCvElem) bsCvElem.textContent='Rs.'+cg.toFixed(2); 
+    if (bsGvElem) bsGvElem.textContent='Rs.'+sg.toFixed(2);
   }
-  v('bs-s').textContent='Rs.'+sub.toFixed(2);
-  v('bs-t').textContent='Rs.'+Math.max(0,tot).toFixed(2);
+  const bsSElem = v('bs-s');
+  const bsTElem = v('bs-t');
+  if (bsSElem) bsSElem.textContent='Rs.'+sub.toFixed(2);
+  if (bsTElem) bsTElem.textContent='Rs.'+Math.max(0,tot).toFixed(2);
 }
 function gTerms() { return Array.from(qa('#tcg input:checked')).map(c=>c.value); }
 function selAllTC() {
@@ -1180,7 +1252,11 @@ function prtBill() {
 }
 
 // ── UTILITIES ─────────────────────────────────
-function v(id) { return document.getElementById(id); }
+function v(id) { 
+  const elem = document.getElementById(id);
+  if (!elem) console.warn(`Element with ID "${id}" not found`);
+  return elem;
+}
 function qa(sel) { return document.querySelectorAll(sel); }
 function esc(s) { if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function ts() { return new Date().toISOString(); }
@@ -1196,16 +1272,28 @@ function sbadge(s) {
 }
 function showScr(id) {
   qa('.screen').forEach(s=>s.classList.remove('active'));
-  v(id).classList.add('active');
+  const scr = v(id);
+  if (scr) scr.classList.add('active');
 }
 function showWelcome() { showScr('sw'); }
-function hide(id) { v(id).style.display='none'; }
+function hide(id) { 
+  const elem = v(id);
+  if (elem) elem.style.display='none';
+}
 
 function openMod(id) {
-  v(id).classList.add('show');
-  if (id==='m-bill') initBillForm();
+  const mod = v(id);
+  if (mod) {
+    mod.classList.add('show');
+    if (id==='m-bill') initBillForm();
+  } else {
+    console.error(`Modal ${id} not found`);
+  }
 }
-function closeMod(id) { v(id).classList.remove('show'); }
+function closeMod(id) { 
+  const mod = v(id);
+  if (mod) mod.classList.remove('show');
+}
 function clov(e, el) { if(e.target===el) el.classList.remove('show'); }
 
 let tt;
@@ -1213,10 +1301,16 @@ function toast(msg, type='i') {
   clearTimeout(tt);
   const ic={s:'✅',e:'❌',i:'ℹ️'};
   const cls={s:'ts',e:'te',i:'ti'};
-  v('tbox').className='tb2 '+(cls[type]||'ti');
-  v('tbox').innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
-  v('toast').classList.add('show');
-  tt=setTimeout(()=>v('toast').classList.remove('show'),4200);
+  const tbox = v('tbox');
+  const toast_el = v('toast');
+  if (!tbox || !toast_el) {
+    console.warn('Toast elements not found');
+    return;
+  }
+  tbox.className='tb2 '+(cls[type]||'ti');
+  tbox.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  toast_el.classList.add('show');
+  tt=setTimeout(()=>toast_el.classList.remove('show'),4200);
 }
 </script>
 </body>
