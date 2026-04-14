@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kraps Care - Authentication</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --blue: #1045a1;
+            --electric: #00b4f0;
+            --cyan: #00e5ff;
+            --white: #f8faff;
+            --gray: #8898aa;
+            --error: #ff6060;
+            --success: #25d366;
+            --border: rgba(0, 180, 240, 0.2);
+            --card: rgba(255, 255, 255, 0.04);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--navy) 0%, #0d1f3c 100%);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--blue), var(--electric));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--electric);
+        }
+
+        .auth-title {
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            color: var(--white);
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        /* Tab Navigation */
+        .tab-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--blue), var(--electric));
+            color: var(--white);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--electric);
+        }
+
+        /* Form Content */
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--electric);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--white);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray);
+        }
+
+        .form-input:focus {
+            border-color: var(--electric);
+            background: rgba(0, 180, 240, 0.06);
+            box-shadow: 0 0 20px rgba(0, 180, 240, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+            background: rgba(255, 96, 96, 0.06);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--electric);
+            font-size: 18px;
+        }
+
+        /* OTP Input */
+        .otp-inputs {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .otp-input {
+            flex: 1;
+            width: 45px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--electric);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .otp-input:focus {
+            border-color: var(--electric);
+            box-shadow: 0 0 20px rgba(0, 180, 240, 0.2);
+        }
+
+        .otp-input.error {
+            border-color: var(--error);
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(255, 96, 96, 0.12);
+            border: 1px solid rgba(255, 96, 96, 0.3);
+            color: #ff8888;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: none;
+            animation: shake 0.4s ease;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        /* Success Message */
+        .success-message {
+            background: rgba(37, 211, 102, 0.12);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            color: var(--success);
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--electric));
+            color: var(--white);
+            box-shadow: 0 6px 24px rgba(0, 180, 240, 0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(0, 180, 240, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--electric);
+            color: var(--electric);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 180, 240, 0.1);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Links and Text */
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-link {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .form-link a {
+            color: var(--electric);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .form-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            margin: 0 10px;
+        }
+
+        /* Helpers */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--electric);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 12px;
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .resend-timer {
+            font-size: 12px;
+            color: var(--electric);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 20px;
+            }
+
+            .auth-title {
+                font-size: 22px;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#fff" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">Kraps Care</div>
+                </div>
+                <h1 class="auth-title">Sign In</h1>
+                <p class="auth-subtitle">Secure Authentication</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-group">
+                <button class="tab-btn active" onclick="switchTab('email')">
+                    Email Login
+                </button>
+                <button class="tab-btn" onclick="switchTab('otp')">
+                    OTP Login
+                </button>
+            </div>
+
+            <!-- Email Login Form -->
+            <div id="email-form" class="form-content active">
+                <div class="error-message" id="email-error"></div>
+                <div class="success-message" id="email-success"></div>
+
+                <!-- User Type Selection -->
+                <div class="form-group">
+                    <label class="form-label">Login As</label>
+                    <select id="user-type" class="form-input">
+                        <option value="technician">Technician</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <!-- Email Input -->
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email-input" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="input-with-icon">
+                        <input 
+                            type="password" 
+                            id="password-input" 
+                            class="form-input" 
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                        >
+                        <span class="input-icon" onclick="togglePasswordVisibility()" title="Toggle password visibility">
+                            👁️
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remember-me" class="checkbox">
+                    <label for="remember-me" class="checkbox-label">Remember me</label>
+                </div>
+
+                <!-- Login Button -->
+                <button class="btn btn-primary" onclick="handleEmailLogin()" id="email-login-btn">
+                    Sign In
+                </button>
+
+                <!-- Forgot Password Link -->
+                <div class="form-footer">
+                    <div class="form-link">
+                        Forgot password? 
+                        <a onclick="switchToForgotPassword()">Reset here</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Login Form -->
+            <div id="otp-form" class="form-content">
+                <div class="error-message" id="otp-error"></div>
+                <div class="success-message" id="otp-success"></div>
+
+                <!-- Phone Number Input -->
+                <div id="phone-section" class="form-group">
+                    <label class="form-label">Mobile Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone-input" 
+                        class="form-input" 
+                        placeholder="+91 98765 43210"
+                        autocomplete="tel"
+                    >
+                    <div id="recaptcha-container"></div>
+                </div>
+
+                <!-- OTP Input -->
+                <div id="otp-section" class="form-group" style="display: none;">
+                    <label class="form-label">Enter OTP</label>
+                    <div class="otp-inputs" id="otp-inputs">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+                    </div>
+                    <div class="resend-timer">
+                        <span id="resend-timer-text">Resend OTP in <span id="timer-count">60</span>s</span>
+                    </div>
+                </div>
+
+                <!-- Send OTP Button -->
+                <button 
+                    class="btn btn-primary" 
+                    onclick="handleOTPSend()" 
+                    id="send-otp-btn"
+                    style="display: block;"
+                >
+                    Send OTP
+                </button>
+
+                <!-- Verify OTP Button -->
+                <button 
+                    class="btn btn-primary" 
+                    onclick="handleOTPVerify()" 
+                    id="verify-otp-btn"
+                    style="display: none;"
+                >
+                    Verify & Login
+                </button>
+
+                <!-- Back Button -->
+                <button 
+                    class="btn btn-secondary" 
+                    onclick="handleOTPCancel()" 
+                    id="cancel-otp-btn"
+                    style="display: none;"
+                >
+                    Back
+                </button>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="forgot-form" class="form-content">
+                <div class="error-message" id="forgot-error"></div>
+                <div class="success-message" id="forgot-success"></div>
+
+                <p style="font-size: 12px; color: var(--gray); margin-bottom: 20px;">
+                    Enter your email address and we'll send you a link to reset your password.
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="forgot-email-input" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <button class="btn btn-primary" onclick="handleForgotPassword()" id="forgot-btn">
+                    Send Reset Link
+                </button>
+
+                <div class="form-footer">
+                    <div class="form-link">
+                        Remember password? 
+                        <a onclick="switchTab('email')">Sign in</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+    <!-- reCAPTCHA for Phone Auth -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- Authentication Module -->
+    <script src="auth.js"></script>
+</body>
+</html>
