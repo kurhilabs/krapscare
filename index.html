@@ -224,67 +224,6 @@ section{padding:80px 5%;}
 .md-text strong{display:block;font-size:11px;color:var(--electric);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
 .map-btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
 
-/* ===== TECHNICIAN ===== */
-#technician{background:linear-gradient(180deg,#0d1f3c 0%,#0a1628 100%);border-top:1px solid var(--border);}
-.tech-header{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
-.tech-badge{background:rgba(255,170,0,0.14);border:1px solid rgba(255,170,0,0.3);color:#ffaa00;font-size:10px;padding:4px 11px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}
-.tab-row{display:flex;gap:10px;margin:26px 0 22px;}
-.tab-btn{
-  flex:1;padding:13px;border-radius:9px;border:1.5px solid var(--border);
-  background:rgba(255,255,255,0.03);color:#a8bcd4;
-  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
-  transition:all .22s;display:flex;align-items:center;justify-content:center;gap:9px;
-}
-.tab-btn.active,.tab-btn:hover{border-color:var(--electric);color:var(--electric);background:rgba(0,180,240,0.09);}
-.bill-panel{display:none;}
-.bill-panel.active{display:block;}
-.bill-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;}
-.bill-form::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#ffaa00,#ff6600);}
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.bfull{grid-column:1/-1;}
-.svc-rows{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
-.svc-row{display:grid;grid-template-columns:1fr 72px 96px 34px;gap:7px;align-items:center;}
-.svc-row input{
-  background:rgba(255,255,255,0.05);border:1.5px solid var(--border);
-  border-radius:7px;padding:9px 11px;color:var(--white);
-  font-family:inherit;font-size:13px;outline:none;width:100%;
-}
-.svc-row input:focus{border-color:var(--electric);}
-.del-btn{
-  width:30px;height:30px;border-radius:7px;border:none;
-  background:rgba(255,80,80,0.14);color:#ff6060;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:700;line-height:1;
-}
-.del-btn:hover{background:rgba(255,80,80,0.28);}
-.add-btn{
-  margin-top:8px;background:transparent;border:1.5px dashed var(--border);
-  color:var(--electric);font-family:inherit;font-size:12px;
-  padding:9px;border-radius:7px;cursor:pointer;width:100%;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-}
-.add-btn:hover{border-color:var(--electric);background:rgba(0,180,240,0.05);}
-.bill-summary{background:rgba(0,180,240,0.07);border:1px solid var(--border);border-radius:11px;padding:18px;margin-top:18px;}
-.bs-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:13px;color:#a8bcd4;}
-.bs-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:14px;font-size:17px;font-weight:800;color:var(--electric);}
-.disc-input{width:65px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--white);font-size:12px;font-family:inherit;outline:none;}
-.bill-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
-.bbtn{
-  flex:1;min-width:130px;padding:12px;border-radius:8px;border:none;
-  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .22s;
-}
-.bbtn-p{background:var(--electric);color:var(--navy);}
-.bbtn-p:hover{background:var(--cyan);}
-.bbtn-o{background:transparent;border:1.5px solid var(--electric);color:var(--electric);}
-.bbtn-o:hover{background:rgba(0,180,240,0.1);}
-
-/* ===== MODAL ===== */
-.modal-ov{position:fixed;inset:0;z-index:1999;background:rgba(5,12,25,0.95);display:none;align-items:center;justify-content:center;padding:16px;}
-.modal-ov.show{display:flex;}
-.modal-box{background:#fff;border-radius:10px;width:100%;max-width:680px;max-height:92vh;overflow-y:auto;color:#111;position:relative;}
-.modal-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;cursor:pointer;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:10;}
-
 /* ===== FOOTER ===== */
 footer{background:#060e1d;border-top:1px solid var(--border);padding:36px 5% 20px;text-align:center;}
 .foot-brand{font-size:24px;font-weight:900;color:var(--electric);margin-bottom:5px;}
@@ -298,95 +237,19 @@ footer{background:#060e1d;border-top:1px solid var(--border);padding:36px 5% 20p
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease;}
 .reveal.visible{opacity:1;transform:none;}
 
-
-/* ===== TECHNICIAN LOGIN ===== */
-#tech-login{display:flex;align-items:center;justify-content:center;min-height:320px;padding:20px 0;}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:44px 40px;max-width:420px;width:100%;position:relative;overflow:hidden;text-align:center;}
-.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--electric),var(--cyan));}
-.login-icon{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--electric));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 0 10px rgba(0,180,240,0.1),0 0 0 22px rgba(0,180,240,0.05);}
-.login-title{font-size:22px;font-weight:900;margin-bottom:6px;color:var(--white);}
-.login-sub{font-size:13px;color:var(--gray);margin-bottom:28px;line-height:1.65;}
-.login-field{position:relative;margin-bottom:14px;text-align:left;}
-.login-field input{width:100%;background:rgba(255,255,255,0.06);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px 14px 48px;font-family:inherit;font-size:16px;color:var(--white);outline:none;transition:border .2s;letter-spacing:1px;}
-.login-field input:focus{border-color:var(--electric);background:rgba(0,180,240,0.06);}
-.login-field .fi{position:absolute;left:14px;top:50%;transform:translateY(-50%);}
-.login-err{background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.3);color:#ff7070;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:14px;display:none;text-align:left;}
-.login-err.show{display:block;}
-.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--blue),var(--electric));color:#fff;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:all .25s;letter-spacing:.5px;box-shadow:0 6px 24px rgba(0,180,240,0.28);}
-.login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,180,240,0.4);}
-.login-hint{font-size:11px;color:var(--gray);margin-top:16px;line-height:1.7;}
-#tech-billing{display:none;}
-.loggedin-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:rgba(0,180,240,0.08);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:22px;}
-.li-info{display:flex;align-items:center;gap:12px;}
-.li-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--electric));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;}
-.li-name{font-size:15px;font-weight:700;color:var(--white);}
-.li-num{font-size:12px;color:var(--electric);margin-top:2px;}
-.logout-btn{background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.25);color:#ff7070;font-family:inherit;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;}
-.logout-btn:hover{background:rgba(255,80,80,0.25);}
-
-
-/* ===== TERMS AND CONDITIONS SELECTOR ===== */
-.tc-section{margin-top:22px;}
-.tc-section label.tc-head{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--electric);margin-bottom:10px;}
-.tc-list{display:flex;flex-direction:column;gap:7px;}
-.tc-item{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:10px 13px;cursor:pointer;transition:border .2s;}
-.tc-item:hover{border-color:rgba(0,180,240,0.4);}
-.tc-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--electric);flex-shrink:0;margin-top:1px;cursor:pointer;}
-.tc-item span{font-size:12px;color:#c0cfe4;line-height:1.55;}
-.tc-item input:checked ~ span{color:var(--white);}
-.tc-selall{background:transparent;border:1px dashed var(--border);color:var(--electric);font-family:inherit;font-size:11px;font-weight:700;padding:7px 14px;border-radius:7px;cursor:pointer;margin-bottom:8px;transition:all .2s;}
-.tc-selall:hover{background:rgba(0,180,240,0.07);border-color:var(--electric);}
-
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
   .hero-float{display:none;}
   .about-grid{grid-template-columns:1fr;}
   .req-grid{grid-template-columns:1fr;}
-  .bgrid{grid-template-columns:1fr;}
-  .bfull{grid-column:1;}
   .nav-links{display:none;}
   .hamburger{display:flex;}
 }
 @media(max-width:580px){
   section{padding:56px 5%;}
   .about-stats{grid-template-columns:1fr 1fr;}
-  .bill-actions{flex-direction:column;}
-  .svc-row{grid-template-columns:1fr 34px;}
-  .svc-row input:nth-child(2),.svc-row input:nth-child(3){display:none;}
 }
 
-/* ===== LOGIN WALL ===== */
-.login-wrap{display:flex;justify-content:center;padding:30px 0 10px;}
-.login-prefix{
-  padding:0 14px;background:rgba(0,180,240,0.1);
-  display:flex;align-items:center;font-size:15px;font-weight:700;
-  color:var(--electric);border-right:1px solid var(--border);white-space:nowrap;
-}
-.login-note{font-size:11px;color:var(--gray);margin-top:16px;}
-/* USER BAR */
-.tech-user-bar{
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
-  background:rgba(0,180,240,0.07);border:1px solid var(--border);
-  border-radius:12px;padding:14px 20px;margin-bottom:20px;
-}
-.tub-left{display:flex;align-items:center;gap:12px;}
-.tub-avatar{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--blue),var(--electric));
-  display:flex;align-items:center;justify-content:center;
-}
-.tub-name{font-size:15px;font-weight:800;color:var(--white);}
-.tub-num{font-size:12px;color:var(--electric);margin-top:2px;letter-spacing:1px;}
-.logout-btn{
-  display:flex;align-items:center;gap:7px;
-  padding:9px 16px;border-radius:7px;border:1.5px solid rgba(255,80,80,0.4);
-  background:rgba(255,80,80,0.08);color:#ff7070;
-  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
-  transition:all .2s;
-}
-.logout-btn:hover{background:rgba(255,80,80,0.18);border-color:rgba(255,80,80,0.7);}
-@keyframes loginShake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
-.shake{animation:loginShake .4s ease;}
 </style>
 </head>
 <body>
@@ -420,7 +283,6 @@ footer{background:#060e1d;border-top:1px solid var(--border);padding:36px 5% 20p
   <a href="#about" onclick="closeNav()">About Us</a>
   <a href="#services" onclick="closeNav()">Services</a>
   <a href="#request" onclick="closeNav()">Contact</a>
-  <a href="#technician" onclick="closeNav()">&#9881; Technician Billing Panel</a>
 </div>
 
 <!-- HERO -->
@@ -694,168 +556,6 @@ footer{background:#060e1d;border-top:1px solid var(--border);padding:36px 5% 20p
   </div>
 </section>
 
-<!-- TECHNICIAN -->
-<section id="technician">
-  <div class="tech-header">
-    <div class="stag" style="margin-bottom:0;">Technician Panel</div>
-    <div class="tech-badge">&#128274; Staff Only</div>
-  </div>
-  <h2 class="stitle">Billing &amp; Invoice Generator</h2>
-  <div class="divider"></div>
-  <p class="sdesc" style="margin-top:10px;">Generate professional bills instantly. Choose Normal or GST invoice type.</p>
-
-  <!-- LOGIN SCREEN -->
-  <div id="tech-login">
-    <div class="login-card">
-      <div class="login-icon">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg>
-      </div>
-      <div class="login-title">Technician Login</div>
-      <div class="login-sub">Apna registered mobile number dalkar<br />Billing Panel mein login karein</div>
-      <div class="login-err" id="login-err">&#10006; Yeh number registered nahi hai. Admin se milein.</div>
-      <div class="login-field">
-        <span class="fi">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#00b4f0"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" /></svg>
-        </span>
-        <input type="tel" id="login-num" placeholder="10-digit Mobile Number daalen" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeydown="if(event.key==='Enter')doLogin()" />
-      </div>
-      <button type="button" class="login-btn" onclick="doLogin()">&#128274; Login Karein</button>
-      <div class="login-hint">&#9432; Sirf registered technicians hi login kar sakte hain.<br />Naya number add karwane ke liye admin se milein.</div>
-    </div>
-  </div>
-
-  <!-- BILLING (login ke baad) -->
-  <div id="tech-billing">
-    <div class="loggedin-bar">
-      <div class="li-info">
-        <div class="li-avatar" id="li-av">T</div>
-        <div>
-          <div class="li-name" id="li-name">Technician</div>
-          <div class="li-num" id="li-num">Logged In &#9989;</div>
-        </div>
-      </div>
-      <button type="button" class="logout-btn" onclick="doLogout()">&#128274; Logout</button>
-    </div>
-    <div class="tab-row">
-      <button type="button" class="tab-btn active" onclick="switchTab('normal',this)">&#128196; Normal Bill</button>
-      <button type="button" class="tab-btn" onclick="switchTab('gst',this)">&#128201; GST Bill</button>
-    </div>
-
-  <!-- NORMAL BILL -->
-  <div class="bill-panel active" id="panel-normal">
-    <div class="bill-form">
-      <div class="bgrid">
-        <div class="fg"><label>Customer Name</label><input type="text" id="n-name" placeholder="Full name" /></div>
-        <div class="fg"><label>Mobile Number</label><input type="text" id="n-mob" placeholder="Customer phone" /></div>
-        <div class="fg"><label>Bill Date</label><input type="date" id="n-date" /></div>
-        <div class="fg"><label>Bill Number</label><input type="text" id="n-bno" placeholder="KC-2024-001" /></div>
-        <div class="fg bfull"><label>Customer Address</label><input type="text" id="n-addr" placeholder="Customer address" /></div>
-      </div>
-      <div class="fg">
-        <label>Services &amp; Items</label>
-        <div id="n-rows" class="svc-rows">
-          <div class="svc-row" style="margin-bottom:2px;">
-            <span style="font-size:11px;color:var(--gray);">Description</span>
-            <span style="font-size:11px;color:var(--gray);">Qty</span>
-            <span style="font-size:11px;color:var(--gray);">Amount</span>
-            <span></span>
-          </div>
-        </div>
-        <button type="button" class="add-btn" onclick="addRow('n')">+ Add Item / Service</button>
-      </div>
-      <div class="bill-summary">
-        <div class="bs-row"><span>Subtotal</span><span id="n-sub">&#8377;0.00</span></div>
-        <div class="bs-row"><span>Discount</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="n-disc" class="disc-input" placeholder="0" oninput="calcN()" /> &#8377;</span></div>
-        <div class="bs-row total"><span>Total Amount</span><span id="n-tot">&#8377;0.00</span></div>
-      </div>
-      <div class="tc-section">
-        <label class="tc-head">&#128221; Terms &amp; Conditions (Bill mein shamil karein)</label>
-        <button type="button" class="tc-selall" onclick="selectAllTC('n')">&#9745; Sab Select Karein</button>
-        <div class="tc-list" id="tc-n">
-          <label class="tc-item"><input type="checkbox" value="Yeh bill sirf is service ke liye valid hai." /><span>1. Yeh bill sirf is service ke liye valid hai.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Service ke baad koi claim 7 din ke andar karna hoga." /><span>2. Service ke baad koi claim 7 din ke andar karna hoga.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Purze (parts) par warranty manufacturer ke niyamon ke anusar hogi." /><span>3. Purze (parts) par warranty manufacturer ke niyamon ke anusar hogi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Ek baar ki gayi payment wapas nahi hogi." /><span>4. Ek baar ki gayi payment wapas nahi hogi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Agar grahak ne khud se machine ko haath lagaya to warranty samapt ho jayegi." /><span>5. Agar grahak ne khud se machine ko haath lagaya to warranty samapt ho jayegi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Company kisi bhi electrical durghatna ke liye zimmedar nahi hogi jo hamari service ke baad hui ho." /><span>6. Company kisi bhi electrical durghatna ke liye zimmedar nahi hogi jo hamari service ke baad hui ho.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Gas refilling par 30 din ki guarantee di jayegi." /><span>7. Gas refilling par 30 din ki guarantee di jayegi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Service charge mein aane-jaane ka kiraya shamil hai." /><span>8. Service charge mein aane-jaane ka kiraya shamil hai.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Kisi bhi vivad ki sthiti mein Haridwar court ka adhikar kshetra manya hoga." /><span>9. Kisi bhi vivad ki sthiti mein Haridwar court ka adhikar kshetra manya hoga.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Yeh ek computer generated invoice hai aur isme hastaakshar avashyak nahi hai." /><span>10. Yeh ek computer generated invoice hai aur isme hastaakshar avashyak nahi hai.</span></label>
-        </div>
-      </div>
-      <div class="bill-actions">
-        <button type="button" class="bbtn bbtn-p" onclick="previewBill('n')">&#128065; Preview Bill</button>
-        <button type="button" class="bbtn bbtn-o" onclick="printBill('n')">&#128424; Print / Download</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- GST BILL -->
-  <div class="bill-panel" id="panel-gst">
-    <div class="bill-form">
-      <div class="bgrid">
-        <div class="fg"><label>Customer Name</label><input type="text" id="g-name" placeholder="Full name" /></div>
-        <div class="fg"><label>Mobile Number</label><input type="text" id="g-mob" placeholder="Customer phone" /></div>
-        <div class="fg"><label>Customer GSTIN (optional)</label><input type="text" id="g-cgst" placeholder="Customer GST number" /></div>
-        <div class="fg"><label>Our GSTIN</label><input type="text" id="g-ogst" placeholder="Your GST number" value="05CHKPK7267G1Z2" /><div style="margin-top:6px;font-size:11px;color:var(--electric);">&#9989; GSTIN: 05CHKPK7267G1Z2 &nbsp;|&nbsp; MSME: UDYAM-UK-06-0091473</div></div>
-        <div class="fg"><label>Bill Date</label><input type="date" id="g-date" /></div>
-        <div class="fg"><label>Bill Number</label><input type="text" id="g-bno" placeholder="KC-GST-001" /></div>
-        <div class="fg bfull"><label>Customer Address</label><input type="text" id="g-addr" placeholder="Customer address" /></div>
-      </div>
-      <div class="fg">
-        <label>Services &amp; Items</label>
-        <div id="g-rows" class="svc-rows">
-          <div class="svc-row" style="margin-bottom:2px;">
-            <span style="font-size:11px;color:var(--gray);">Description</span>
-            <span style="font-size:11px;color:var(--gray);">Qty</span>
-            <span style="font-size:11px;color:var(--gray);">Amount</span>
-            <span></span>
-          </div>
-        </div>
-        <button type="button" class="add-btn" onclick="addRow('g')">+ Add Item / Service</button>
-      </div>
-      <div class="fg" style="margin-top:10px;">
-        <label>GST Rate</label>
-        <select id="g-rate" onchange="calcG()" style="background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:7px;padding:12px 14px;color:var(--white);font-family:inherit;font-size:14px;width:100%;">
-          <option value="5">5% GST</option>
-          <option value="12">12% GST</option>
-          <option value="18" selected="selected">18% GST</option>
-          <option value="28">28% GST</option>
-        </select>
-      </div>
-      <div class="bill-summary">
-        <div class="bs-row"><span>Taxable Amount</span><span id="g-sub">&#8377;0.00</span></div>
-        <div class="bs-row"><span>CGST (<span id="g-cr">9</span>%)</span><span id="g-cv">&#8377;0.00</span></div>
-        <div class="bs-row"><span>SGST (<span id="g-sr">9</span>%)</span><span id="g-sv">&#8377;0.00</span></div>
-        <div class="bs-row"><span>Discount</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="g-disc" class="disc-input" placeholder="0" oninput="calcG()" /> &#8377;</span></div>
-        <div class="bs-row total"><span>Grand Total (incl. GST)</span><span id="g-tot">&#8377;0.00</span></div>
-      </div>
-      <div class="tc-section">
-        <label class="tc-head">&#128221; Terms &amp; Conditions (Bill mein shamil karein)</label>
-        <button type="button" class="tc-selall" onclick="selectAllTC('g')">&#9745; Sab Select Karein</button>
-        <div class="tc-list" id="tc-g">
-          <label class="tc-item"><input type="checkbox" value="Yeh bill sirf is service ke liye valid hai." /><span>1. Yeh bill sirf is service ke liye valid hai.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Service ke baad koi claim 7 din ke andar karna hoga." /><span>2. Service ke baad koi claim 7 din ke andar karna hoga.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Purze (parts) par warranty manufacturer ke niyamon ke anusar hogi." /><span>3. Purze (parts) par warranty manufacturer ke niyamon ke anusar hogi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Ek baar ki gayi payment wapas nahi hogi." /><span>4. Ek baar ki gayi payment wapas nahi hogi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Agar grahak ne khud se machine ko haath lagaya to warranty samapt ho jayegi." /><span>5. Agar grahak ne khud se machine ko haath lagaya to warranty samapt ho jayegi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Company kisi bhi electrical durghatna ke liye zimmedar nahi hogi jo hamari service ke baad hui ho." /><span>6. Company kisi bhi electrical durghatna ke liye zimmedar nahi hogi jo hamari service ke baad hui ho.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Gas refilling par 30 din ki guarantee di jayegi." /><span>7. Gas refilling par 30 din ki guarantee di jayegi.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Service charge mein aane-jaane ka kiraya shamil hai." /><span>8. Service charge mein aane-jaane ka kiraya shamil hai.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Kisi bhi vivad ki sthiti mein Haridwar court ka adhikar kshetra manya hoga." /><span>9. Kisi bhi vivad ki sthiti mein Haridwar court ka adhikar kshetra manya hoga.</span></label>
-          <label class="tc-item"><input type="checkbox" value="Yeh ek computer generated invoice hai aur isme hastaakshar avashyak nahi hai." /><span>10. Yeh ek computer generated invoice hai aur isme hastaakshar avashyak nahi hai.</span></label>
-        </div>
-      </div>
-      <div class="bill-actions">
-        <button type="button" class="bbtn bbtn-p" onclick="previewBill('g')">&#128065; Preview GST Bill</button>
-        <button type="button" class="bbtn bbtn-o" onclick="printBill('g')">&#128424; Print / Download</button>
-      </div>
-    </div>
-  </div>
-
-</section>
-
 <!-- FOOTER -->
 <footer>
   <div class="foot-brand">Kraps Care</div>
@@ -865,20 +565,11 @@ footer{background:#060e1d;border-top:1px solid var(--border);padding:36px 5% 20p
     <a href="#about">About</a>
     <a href="#services">Services</a>
     <a href="#request">Contact</a>
-    <a href="#technician">Billing Panel</a>
     <a href="tel:9258601527">&#128222; 9258601527</a>
     <a href="mailto:krapscare@gmail.com">&#9993; krapscare@gmail.com</a>
   </div>
   <div class="foot-copy">&#169; 2024 Kraps Care &#8211; Kurhi Refrigeration &amp; Power Solutions. All rights reserved. | Haridwar &#8211; 249402</div>
 </footer>
-
-<!-- MODAL -->
-<div class="modal-ov" id="modal" onclick="closeModal(event)">
-  <div style="position:relative;width:100%;max-width:660px;">
-    <button type="button" class="modal-x" onclick="document.getElementById('modal').classList.remove('show')">&#10005;</button>
-    <div class="modal-box" id="modal-content"></div>
-  </div>
-</div>
 
 <script type="text/javascript">
 //<![CDATA[
@@ -907,220 +598,8 @@ var ro = new IntersectionObserver(function(entries) {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(function(el) { ro.observe(el); });
 
-/* TABS */
-function switchTab(type, btn) {
-  document.querySelectorAll('.bill-panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById('panel-' + type).classList.add('active');
-  if (btn) btn.classList.add('active');
-}
-
-/* ROWS */
-function addRow(p) {
-  var cont = document.getElementById(p + '-rows');
-  var id = 'r' + Date.now();
-  var fn = p === 'n' ? 'calcN()' : 'calcG()';
-  var d = document.createElement('div');
-  d.className = 'svc-row';
-  d.id = id;
-  d.innerHTML =
-    '<input type="text" placeholder="Description" oninput="' + fn + '" />' +
-    '<input type="number" placeholder="1" min="1" value="1" oninput="' + fn + '" />' +
-    '<input type="number" placeholder="0.00" min="0" step="0.01" oninput="' + fn + '" />' +
-    '<button type="button" class="del-btn" onclick="delRow(\'' + id + '\',\'' + p + '\')">&#215;<\/button>';
-  cont.appendChild(d);
-}
-function delRow(id, p) {
-  var el = document.getElementById(id);
-  if (el) el.parentNode.removeChild(el);
-  if (p === 'n') { calcN(); } else { calcG(); }
-}
-function rows(p) {
-  var items = document.querySelectorAll('#' + p + '-rows .svc-row[id]');
-  var out = [];
-  for (var i = 0; i < items.length; i++) {
-    var ins = items[i].querySelectorAll('input');
-    out.push({ desc: ins[0].value, qty: parseFloat(ins[1].value) || 1, amt: parseFloat(ins[2].value) || 0 });
-  }
-  return out;
-}
-function sub(p) { var r = rows(p), s = 0; for (var i = 0; i < r.length; i++) { s += r[i].qty * r[i].amt; } return s; }
-function v(id) { return document.getElementById(id); }
-function rs(n) { return '\u20B9' + n.toFixed(2); }
-
-function calcN() {
-  var s = sub('n'), d = parseFloat(v('n-disc').value) || 0;
-  v('n-sub').textContent = rs(s);
-  v('n-tot').textContent = rs(Math.max(0, s - d));
-}
-function calcG() {
-  var s = sub('g'), rate = parseFloat(v('g-rate').value), h = rate / 2;
-  var cg = s * h / 100, sg = s * h / 100, d = parseFloat(v('g-disc').value) || 0;
-  v('g-sub').textContent = rs(s);
-  v('g-cr').textContent = h; v('g-sr').textContent = h;
-  v('g-cv').textContent = rs(cg); v('g-sv').textContent = rs(sg);
-  v('g-tot').textContent = rs(Math.max(0, s + cg + sg - d));
-}
-
-/* INIT */
-document.addEventListener('DOMContentLoaded', function() {
-  var t = new Date().toISOString().split('T')[0];
-  v('n-date').value = t; v('g-date').value = t;
-  var r = String(Math.floor(Math.random() * 900) + 100);
-  v('n-bno').value = 'KC-' + new Date().getFullYear() + '-' + r;
-  v('g-bno').value = 'KC-GST-' + r;
-  addRow('n'); addRow('g');
-});
-
-/* BILL BUILDER */
-function billHTML(p) {
-  var isG = p === 'g';
-  var nm = v(p+'-name').value||'-', mob = v(p+'-mob').value||'-';
-  var addr = v(p+'-addr').value||'-', date = v(p+'-date').value||'-', bno = v(p+'-bno').value||'-';
-  var rr = rows(p), s = sub(p), trs = '';
-  for (var i = 0; i < rr.length; i++) {
-    trs += '<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;">' + (i+1) +
-      '<\/td><td style="padding:8px 10px;border-bottom:1px solid #eee;">' + (rr[i].desc||'-') +
-      '<\/td><td style="padding:8px 10px;border-bottom:1px solid #eee;">' + rr[i].qty +
-      '<\/td><td style="padding:8px 10px;border-bottom:1px solid #eee;">Rs.' + rr[i].amt.toFixed(2) +
-      '<\/td><td style="padding:8px 10px;border-bottom:1px solid #eee;">Rs.' + (rr[i].qty*rr[i].amt).toFixed(2) + '<\/td><\/tr>';
-  }
-  var sumRows = '', total = s;
-  if (isG) {
-    var rate = parseFloat(v('g-rate').value), h = rate/2;
-    var cg = s*h/100, sg = s*h/100, d = parseFloat(v('g-disc').value)||0;
-    total = Math.max(0, s+cg+sg-d);
-    var og = v('g-ogst').value, cust_g = v('g-cgst').value;
-    var gline = og ? 'GSTIN: ' + og + (cust_g ? ' | Cust GSTIN: ' + cust_g : '') : '';
-    sumRows =
-      '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">Subtotal<\/td><td style="padding:6px 10px;">Rs.' + s.toFixed(2) + '<\/td><\/tr>' +
-      '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">CGST ' + h + '%<\/td><td style="padding:6px 10px;">Rs.' + cg.toFixed(2) + '<\/td><\/tr>' +
-      '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">SGST ' + h + '%<\/td><td style="padding:6px 10px;">Rs.' + sg.toFixed(2) + '<\/td><\/tr>' +
-      (d > 0 ? '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">Discount<\/td><td style="padding:6px 10px;">-Rs.' + d.toFixed(2) + '<\/td><\/tr>' : '') +
-      '<tr style="color:#1045a1;font-weight:800;font-size:15px;"><td colspan="2" style="text-align:right;padding:10px;border-top:2px solid #1045a1;">Grand Total<\/td><td style="padding:10px;border-top:2px solid #1045a1;">Rs.' + total.toFixed(2) + '<\/td><\/tr>';
-    return hdr(bno,date,nm,mob,addr,'GST TAX INVOICE',gline) + tbl(trs) + smry(sumRows) + ftr(isG, getSelectedTC(p));
-  } else {
-    var dn = parseFloat(v('n-disc').value)||0;
-    total = Math.max(0, s-dn);
-    sumRows =
-      '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">Subtotal<\/td><td style="padding:6px 10px;">Rs.' + s.toFixed(2) + '<\/td><\/tr>' +
-      (dn > 0 ? '<tr><td colspan="2" style="text-align:right;padding:6px 10px;">Discount<\/td><td style="padding:6px 10px;">-Rs.' + dn.toFixed(2) + '<\/td><\/tr>' : '') +
-      '<tr style="color:#1045a1;font-weight:800;font-size:15px;"><td colspan="2" style="text-align:right;padding:10px;border-top:2px solid #1045a1;">Total Amount<\/td><td style="padding:10px;border-top:2px solid #1045a1;">Rs.' + total.toFixed(2) + '<\/td><\/tr>';
-    return hdr(bno,date,nm,mob,addr,'SERVICE INVOICE','') + tbl(trs) + smry(sumRows) + ftr(isG, getSelectedTC(p));
-  }
-}
-function hdr(bno,date,nm,mob,addr,type,gline) {
-  return '<div style="font-family:Arial,sans-serif;color:#111;padding:36px;">' +
-    '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:18px;border-bottom:2.5px solid #1045a1;margin-bottom:20px;">' +
-    '<div><div style="font-size:24px;font-weight:900;color:#1045a1;">Kraps Care<\/div>' +
-    '<div style="font-size:10px;color:#666;letter-spacing:1px;margin-top:2px;">KURHI REFRIGERATION AND POWER SOLUTIONS<\/div>' +
-    '<div style="font-size:10px;color:#888;margin-top:3px;">Gali No. 3, Siddhi Vinayak Colony Ph-2, SIDCUL Bypass Rd, Salempur, Haridwar-249402<\/div>' +
-    '<div style="font-size:10px;color:#1045a1;margin-top:3px;font-weight:700;">GSTIN: 05CHKPK7267G1Z2 &nbsp;|&nbsp; MSME: UDYAM-UK-06-0091473<\/div>' +
-    (gline ? '<div style="font-size:10px;color:#555;margin-top:2px;">Cust GSTIN: ' + gline.replace('GSTIN: 05CHKPK7267G1Z2 | ','').replace('GSTIN: ','') + '<\/div>' : '') + '<\/div>' +
-    '<div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#1045a1;">' + type + '<\/div>' +
-    '<div style="font-size:11px;color:#555;margin-top:4px;">Bill No: <strong>' + bno + '<\/strong><\/div>' +
-    '<div style="font-size:11px;color:#555;">Date: <strong>' + date + '<\/strong><\/div><\/div><\/div>' +
-    '<div style="background:#f5f8ff;padding:13px 16px;border-radius:7px;margin-bottom:20px;">' +
-    '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Bill To<\/div>' +
-    '<div style="font-size:15px;font-weight:700;">' + nm + '<\/div>' +
-    '<div style="font-size:12px;color:#555;margin-top:2px;">Ph: ' + mob + '  |  ' + addr + '<\/div><\/div>';
-}
-function tbl(trs) {
-  return '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;">' +
-    '<thead><tr style="background:#1045a1;color:#fff;">' +
-    '<th style="padding:9px 10px;text-align:left;font-size:11px;">#<\/th>' +
-    '<th style="padding:9px 10px;text-align:left;font-size:11px;">Description<\/th>' +
-    '<th style="padding:9px 10px;text-align:left;font-size:11px;">Qty<\/th>' +
-    '<th style="padding:9px 10px;text-align:left;font-size:11px;">Rate<\/th>' +
-    '<th style="padding:9px 10px;text-align:left;font-size:11px;">Amount<\/th>' +
-    '<\/tr><\/thead><tbody>' + trs + '<\/tbody><\/table>';
-}
-function smry(rows) {
-  return '<div style="display:flex;justify-content:flex-end;">' +
-    '<table style="min-width:240px;border-collapse:collapse;">' + rows + '<\/table><\/div>';
-}
-function ftr(isG, terms) {
-  var tcHTML = '';
-  if (terms && terms.length > 0) {
-    tcHTML = '<div style="margin-top:20px;padding:14px 16px;background:#f0f6ff;border-radius:7px;border:1px solid #c8d8f0;">' +
-      '<div style="font-size:11px;font-weight:800;color:#1045a1;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Terms &amp; Conditions:<\/div><ol style="margin:0;padding-left:18px;">';
-    for (var i = 0; i < terms.length; i++) {
-      tcHTML += '<li style="font-size:10.5px;color:#333;margin-bottom:5px;line-height:1.55;">' + terms[i] + '<\/li>';
-    }
-    tcHTML += '<\/ol><\/div>';
-  }
-  return tcHTML +
-    '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #eee;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:11px;color:#888;">' +
-    '<div>Thank you for your business!<br/>krapscare@gmail.com | 9258601527<br/>' +
-    '<span style="font-size:10px;color:#aaa;">Computer-generated ' + (isG ? 'GST ' : '') + 'invoice.<\/span><\/div>' +
-    '<div style="text-align:right;"><div style="border-top:1px solid #333;width:130px;margin:32px 0 4px auto;"><\/div>' +
-    'Authorised Signatory<br/><strong>Kraps Care<\/strong><\/div><\/div><\/div>';
-}
-
-
-/* TERMS AND CONDITIONS */
-function selectAllTC(p) {
-  var boxes = document.querySelectorAll('#tc-' + p + ' input[type=checkbox]');
-  var allChecked = true;
-  for (var i = 0; i < boxes.length; i++) { if (!boxes[i].checked) { allChecked = false; break; } }
-  for (var j = 0; j < boxes.length; j++) { boxes[j].checked = !allChecked; }
-}
-
-function getSelectedTC(p) {
-  var boxes = document.querySelectorAll('#tc-' + p + ' input[type=checkbox]:checked');
-  var terms = [];
-  for (var i = 0; i < boxes.length; i++) { terms.push(boxes[i].value); }
-  return terms;
-}
-
-function previewBill(p) {
-  v('modal-content').innerHTML = billHTML(p);
-  v('modal').classList.add('show');
-}
-function closeModal(e) { if (e.target === v('modal')) v('modal').classList.remove('show'); }
-function printBill(p) {
-  var html = billHTML(p);
-  var w = window.open('', '_blank');
-  w.document.write('<!DOCTYPE html><html><head><title>Invoice - Kraps Care<\/title>' +
-    '<style>body{margin:0;font-family:Arial,sans-serif;}@media print{.np{display:none;}}<\/style>' +
-    '<\/head><body>' + html +
-    '<div class="np" style="text-align:center;padding:20px;">' +
-    '<button onclick="window.print()" style="padding:11px 24px;background:#1045a1;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer;font-weight:700;">Print / Save as PDF<\/button> ' +
-    '<button onclick="window.close()" style="padding:11px 24px;background:#eee;border:none;border-radius:7px;font-size:14px;cursor:pointer;">Close<\/button>' +
-    '<\/div><\/body><\/html>');
-  w.document.close();
-}
 function submitReq() {
   alert('Thank you! Your service request has been received.\nOur team will contact you shortly.\n\nFor urgent help call: 9258601527');
-}
-
-
-/* ===== TECHNICIAN LOGIN ===== */
-var TECHNICIANS = {
-  '9258601527': 'Kurhi Refrigeration (Admin)',
-  '9410168261': 'Technician 2',
-  '0000000000': 'Demo Technician'
-};
-
-function doLogin() {
-  var num = document.getElementById('login-num').value.trim();
-  var err = document.getElementById('login-err');
-  err.classList.remove('show');
-  if (num.length !== 10) { err.textContent = '&#10006; Please enter valid 10-digit mobile number.'; err.classList.add('show'); return; }
-  if (!TECHNICIANS[num]) { err.innerHTML = '&#10006; <strong>' + num + '</strong> registered nahi hai. Admin se contact karein.'; err.classList.add('show'); return; }
-  var name = TECHNICIANS[num];
-  document.getElementById('li-av').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('li-name').textContent = name;
-  document.getElementById('li-num').innerHTML = '+91 ' + num + ' · ✓ Logged In';
-  document.getElementById('tech-login').style.display = 'none';
-  document.getElementById('tech-billing').style.display = 'block';
-  document.getElementById('login-num').value = '';
-}
-
-function doLogout() {
-  document.getElementById('tech-billing').style.display = 'none';
-  document.getElementById('tech-login').style.display = 'flex';
-  document.getElementById('login-err').classList.remove('show');
 }
 
 
