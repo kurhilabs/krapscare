@@ -27,20 +27,29 @@ let resendTimeoutId;
  */
 async function initializeFirebase() {
     try {
+        console.log('🔍 Checking Firebase availability...');
+        
         // Wait for Firebase to be ready (set by firebase-config.js)
         let waitCount = 0;
-        const maxWait = 100;
+        const maxWait = 50;
 
         while (!window.firebaseReady && waitCount < maxWait) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            if (waitCount === 0) {
+                console.log('⏳ Waiting for Firebase services...');
+            }
+            await new Promise(resolve => setTimeout(resolve, 200));
             waitCount++;
+            
+            if (waitCount % 10 === 0) {
+                console.log(`  Still waiting... (${waitCount}/${maxWait})`);
+            }
         }
 
         if (!window.firebaseReady) {
             if (window.firebaseError) {
-                throw new Error(window.firebaseError);
+                throw new Error('Firebase Error: ' + window.firebaseError);
             }
-            throw new Error('Firebase initialization timeout - services not available');
+            throw new Error('Firebase services timeout - could not initialize after ' + (maxWait * 200 / 1000) + ' seconds');
         }
 
         // Get Firebase instances
@@ -48,27 +57,28 @@ async function initializeFirebase() {
         db = window.firebaseDb;
 
         if (!auth || !db) {
-            throw new Error('Firebase services are not properly initialized');
+            throw new Error('Firebase services exist but are undefined');
         }
 
-        console.log('✓ Firebase services connected');
+        console.log('✅ Firebase services connected successfully');
 
         // Set up auth state listener
         auth.onAuthStateChanged(async (user) => {
             if (user && !window.location.pathname.endsWith('dashboard/index.html')) {
                 const currentPath = window.location.pathname;
                 if (!currentPath.includes('dashboard')) {
+                    console.log('User logged in, redirecting to dashboard...');
                     await redirectToDashboard(user.uid);
                 }
             }
         });
 
         setupRecaptcha();
-        console.log('✓ Firebase authentication module ready');
+        console.log('✅ Firebase authentication module fully initialized');
         
     } catch (error) {
         console.error('✗ Firebase initialization error:', error.message);
-        showError('email', 'Failed to initialize authentication. Please refresh the page. Error: ' + error.message);
+        showError('email', 'Authentication initialization failed: ' + error.message + '. Please refresh the page.');
     }
 }
 
