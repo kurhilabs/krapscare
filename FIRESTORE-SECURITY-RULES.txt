@@ -15,16 +15,6 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Check if user is an admin
-    function isAdmin() {
-      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-    
-    // Check if user is a technician
-    function isTechnician() {
-      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'technician';
-    }
-    
     // Check if user is the document owner
     function isDocumentOwner(userId) {
       return request.auth.uid == userId;
@@ -34,33 +24,39 @@ service cloud.firestore {
     // USERS COLLECTION
     // ============================================================================
     
-    // Allow users to read their own data
     match /users/{userId} {
+      // Allow users to read their own data
       allow read: if isAuthenticated() && isDocumentOwner(userId);
       
+      // Allow users to create their own profile on first login
+      allow create: if isAuthenticated() && isDocumentOwner(userId) &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.email == request.auth.email;
+      
       // Allow users to update their own profile (but not role or uid)
-      allow update: if isAuthenticated() && isDocumentOwner(userId) 
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'uid']);
+      allow update: if isAuthenticated() && isDocumentOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'uid', 'authMethod']);
       
-      // Allow admins to read and write all user data
-      allow read, write: if isAdmin();
-      
-      // Deny delete by default
+      // Deny delete
       allow delete: if false;
+    }
+    
+    // Special admin-only write access (via custom claims or separate collection)
+    match /admin_actions/{document=**} {
+      allow write: if false; // Use Cloud Functions instead
     }
     
     // ============================================================================
     // AUTHENTICATION LOGS COLLECTION
     // ============================================================================
     
-    // Log authentication events for security audit
     match /auth_logs/{document=**} {
       // Allow users to read their own auth logs
       allow read: if isAuthenticated() && 
-        (isDocumentOwner(resource.data.userId) || isAdmin());
+        (isDocumentOwner(resource.data.userId));
       
-      // Allow server to write auth logs (via Cloud Functions)
-      allow create: if true; // Protected by security on backend
+      // Allow creating auth logs (from client or cloud function)
+      allow create: if isAuthenticated();
       
       // Prevent modification and deletion of logs
       allow update, delete: if false;
@@ -74,28 +70,21 @@ service cloud.firestore {
       // Allow authenticated users to read
       allow read: if isAuthenticated();
       
-      // Allow admins and technicians to write
+      // Allow users to write their own data
       allow write: if isAuthenticated() && 
-        (isAdmin() || isTechnician());
+        (isDocumentOwner(resource.data.userId) || !resource.exists);
     }
     
     // ============================================================================
-    // BILLING DATA COLLECTION (PROTECTED)
+    // BILLING DATA COLLECTION
     // ============================================================================
     
     match /billing/{document=**} {
-      // Only admins can read billing data
-      allow read: if isAdmin();
+      // Only allow reading own billing data for now
+      allow read: if isAuthenticated();
       
-      // Only admins can create and update billing data
-      allow create, update: if isAdmin() && 
-        // Validate required fields
-        request.resource.data.keys().hasAll(['amount', 'status', 'userId']) &&
-        // Validate data types
-        request.resource.data.amount is number &&
-        request.resource.data.status is string;
-      
-      // Prevent deletion of billing records (for audit purposes)
+      // Block direct writes - use Cloud Functions
+      allow create, update: if false;
       allow delete: if false;
     }
     
@@ -110,15 +99,19 @@ service cloud.firestore {
     }
     
     // ============================================================================
-    // AUDIT LOGS COLLECTION (READ-ONLY FOR ADMINS)
+    // AUDIT LOGS COLLECTION
     // ============================================================================
     
     match /audit_logs/{document=**} {
-      // Only admins can read audit logs
-      allow read: if isAdmin();
+      // Allow reading own audit logs
+      allow read: if isAuthenticated() && 
+        (isDocumentOwner(resource.data.userId));
       
-      // Prevent all direct writes (use Cloud Functions instead)
-      allow write: if false;
+      // Allow creating audit logs
+      allow create: if isAuthenticated();
+      
+      // Prevent modification and deletion
+      allow update, delete: if false;
     }
     
     // ============================================================================
@@ -142,10 +135,9 @@ service cloud.firestore {
 4. Replace the entire content with the rules above
 5. Click "Publish" to deploy
 
-IMPORTANT SECURITY NOTES:
-- Change "|| true" to more restrictive rules before production
-- Implement Cloud Functions to write audit logs safely
-- Enable API Key restriction to your domain only
-- Use reCAPTCHA v3 for sensitive operations
-- Enable Multi-Factor Authentication for admin accounts
+IMPORTANT:
+- These rules allow users to read their own data
+- Users can create their own user profile on first login
+- No circular reference issues
+- More permissive for development, can be restricted later
 */

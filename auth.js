@@ -232,18 +232,26 @@ async function getUserData(uid) {
             throw new Error('Firestore not initialized');
         }
 
+        console.log('🔍 Looking for user document with UID:', uid);
+
         const userRef = db.collection('users').doc(uid);
         const doc = await userRef.get();
 
+        console.log('📄 Document exists:', doc.exists);
+        
         if (!doc.exists) {
+            console.error('❌ User document not found for UID:', uid);
+            console.error('   Collection: users');
+            console.error('   Document ID:', uid);
             throw new Error('User data not found in database');
         }
 
         const userData = doc.data();
+        console.log('✅ User data found:', userData);
         
         // Validate required fields
         if (!userData.role || !userData.name) {
-            throw new Error('Invalid user data structure');
+            throw new Error('Invalid user data structure - missing role or name');
         }
 
         return userData;
