@@ -27,13 +27,20 @@ let resendTimeoutId;
  */
 async function initializeFirebase() {
     try {
-        // Get Firebase instances (initialized in firebase-config.js)
-        auth = firebase.auth();
-        db = firebase.firestore();
+        // Wait for Firebase services to be available from firebase-config.js
+        let retries = 0;
+        while ((!window.firebaseAuth || !window.firebaseDb) && retries < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+
+        // Get Firebase instances from global scope (set by firebase-config.js)
+        auth = window.firebaseAuth;
+        db = window.firebaseDb;
 
         // Verify Firebase is properly initialized
         if (!auth || !db) {
-            throw new Error('Firebase initialization incomplete');
+            throw new Error('Firebase initialization incomplete - services not found');
         }
 
         // Set up auth state listener
@@ -49,8 +56,7 @@ async function initializeFirebase() {
         });
 
         setupRecaptcha();
-        console.log('✓ Firebase initialized successfully');
-        console.log('✓ Project:', firebase.app().options.projectId);
+        console.log('✓ Firebase services loaded and configured');
     } catch (error) {
         console.error('✗ Firebase initialization error:', error);
         showError('email', 'Failed to initialize authentication. Please refresh the page.');
@@ -811,27 +817,30 @@ function prefillEmail() {
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if Firebase is available
-    if (typeof firebase !== 'undefined') {
-        initializeFirebase();
-    } else {
-        console.warn('⚠ Firebase not loaded. Make sure Firebase scripts are included.');
-    }
+    // Initialize Firebase authentication
+    initializeFirebase();
 
     // Pre-fill email if remembered
     prefillEmail();
 
     // Add keyboard handlers
-    document.getElementById('password-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleEmailLogin();
-    });
-
-    document.getElementById('forgot-email-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleForgotPassword();
-    });
+    const passwordInput = document.getElementById('password-input');
+    const forgotInput = document.getElementById('forgot-email-input');
+    
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleEmailLogin();
+        });
+    }
+    
+    if (forgotInput) {
+        forgotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleForgotPassword();
+        });
+    }
 
     // Log ready state
-    console.log('✓ Authentication module loaded');
+    console.log('✓ Authentication module loaded and ready');
 });
 
 // ============================================================================

@@ -16,25 +16,59 @@ const firebaseConfig = {
 };
 
 /**
- * Initialize Firebase
- * This runs automatically when the script is loaded
+ * Check and initialize Firebase
  */
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+function setupFirebaseConfig() {
+    try {
+        // Check if Firebase is loaded
+        if (typeof firebase === 'undefined' || !firebase) {
+            console.warn('⏳ Firebase still loading, will retry...');
+            setTimeout(setupFirebaseConfig, 200);
+            return;
+        }
+
+        // Initialize if not already initialized
+        if (!firebase.apps || firebase.apps.length === 0) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('✓ Firebase App initialized');
+        } else {
+            console.log('✓ Firebase App already initialized');
+        }
+
+        // Get services
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        if (!auth || !db) {
+            throw new Error('Failed to get Firebase services');
+        }
+
+        // Store globally
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+
+        console.log('✓ Firebase Auth and Firestore ready');
+
+        // Try to enable persistence
+        db.enablePersistence().catch((err) => {
+            // Persistence errors are usually not critical
+            console.log('ℹ Firestore persistence:', err.code);
+        });
+
+    } catch (error) {
+        console.error('✗ Firebase setup error:', error);
+        // Retry on error
+        setTimeout(setupFirebaseConfig, 1000);
+    }
 }
 
-// Get Firebase services
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Start setup when document is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupFirebaseConfig);
+} else {
+    // If already loaded (rare), setup immediately
+    setupFirebaseConfig();
+}
 
-// Enable offline persistence (optional - for better UX)
-db.enablePersistence()
-    .catch((err) => {
-        if (err.code === 'failed-precondition') {
-            console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-        } else if (err.code === 'unimplemented') {
-            console.log('The current browser does not support offline persistence.');
-        }
-    });
-
-console.log('✓ Firebase initialized successfully');
+// Also setup on a small delay to catch late-loading scenarios
+setTimeout(setupFirebaseConfig, 100);
