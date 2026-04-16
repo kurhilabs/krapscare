@@ -15,6 +15,7 @@
 bally
  */
 
+// Firebase instances will be initialized by firebase-config.js
 let auth;
 let db;
 let confirmationResult;
@@ -26,20 +27,30 @@ let resendTimeoutId;
  */
 async function initializeFirebase() {
     try {
-        // Get Firebase instances (assumes Firebase is already initialized globally)
+        // Get Firebase instances (initialized in firebase-config.js)
         auth = firebase.auth();
         db = firebase.firestore();
 
+        // Verify Firebase is properly initialized
+        if (!auth || !db) {
+            throw new Error('Firebase initialization incomplete');
+        }
+
         // Set up auth state listener
         auth.onAuthStateChanged(async (user) => {
-            if (user) {
+            if (user && !window.location.pathname.endsWith('dashboard/index.html')) {
                 // User is logged in - redirect to dashboard
-                await redirectToDashboard(user.uid);
+                // But not if we're already on the dashboard
+                const currentPath = window.location.pathname;
+                if (!currentPath.includes('dashboard')) {
+                    await redirectToDashboard(user.uid);
+                }
             }
         });
 
         setupRecaptcha();
         console.log('✓ Firebase initialized successfully');
+        console.log('✓ Project:', firebase.app().options.projectId);
     } catch (error) {
         console.error('✗ Firebase initialization error:', error);
         showError('email', 'Failed to initialize authentication. Please refresh the page.');
@@ -159,6 +170,9 @@ async function handleEmailLogin() {
             throw new Error(`This account is not registered as a ${userType.toUpperCase()}`);
         }
 
+        // Log authentication event
+        await logAuthEvent(user.uid, 'login', 'email');
+
         // Save remember me preference
         if (rememberMe) {
             localStorage.setItem('krapscare_email', email);
@@ -189,17 +203,50 @@ async function handleEmailLogin() {
  */
 async function getUserData(uid) {
     try {
-        const docRef = firebase.firestore().collection('users').doc(uid);
-        const doc = await docRef.get();
-
-        if (!doc.exists) {
-            throw new Error('User data not found');
+        if (!db) {
+            throw new Error('Firestore not initialized');
         }
 
-        return doc.data();
+        const userRef = db.collection('users').doc(uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            throw new Error('User data not found in database');
+        }
+
+        const userData = doc.data();
+        
+        // Validate required fields
+        if (!userData.role || !userData.name) {
+            throw new Error('Invalid user data structure');
+        }
+
+        return userData;
     } catch (error) {
         console.error('✗ Error fetching user data:', error);
         throw error;
+    }
+}
+
+/**
+ * Log authentication events for audit trail
+ */
+async function logAuthEvent(uid, eventType, method) {
+    try {
+        if (!db) return; // Silently fail if Firestore not available
+        
+        const logRef = db.collection('auth_logs').doc();
+        await logRef.set({
+            userId: uid,
+            eventType: eventType, // 'login', 'signup', 'logout', 'password_reset'
+            method: method, // 'email', 'phone'
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            ipAddress: 'client-side' // IP logging should be done server-side
+        });
+    } catch (error) {
+        console.warn('⚠ Could not log auth event:', error);
+        // Don't throw - auth should continue even if logging fails
     }
 }
 
@@ -442,24 +489,39 @@ function startResendTimer() {
  */
 async function getOrCreateUserFromPhone(user) {
     try {
-        const userRef = firebase.firestore().collection('users').doc(user.uid);
+        if (!db) {
+            throw new Error('Firestore not initialized');
+        }
+
+        const userRef = db.collection('users').doc(user.uid);
         const doc = await userRef.get();
 
         if (!doc.exists) {
-            // Create new user record
-            await userRef.set({
+            // Create new user record with security logging
+            const userData = {
                 uid: user.uid,
                 phone: user.phoneNumber,
                 role: 'user',
                 name: 'User',
+                email: user.email || null,
                 createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            });
+                lastLogin: new Date().toISOString(),
+                authMethod: 'phone',
+                verified: true
+            };
+
+            await userRef.set(userData);
+            
+            // Log auth event
+            await logAuthEvent(user.uid, 'signup', 'phone');
         } else {
             // Update last login
             await userRef.update({
                 lastLogin: new Date().toISOString()
             });
+            
+            // Log auth event
+            await logAuthEvent(user.uid, 'login', 'phone');
         }
 
         // Store user role
@@ -554,6 +616,10 @@ async function handleForgotPassword() {
             handleCodeInApp: false
         });
 
+        // Log password reset request
+        // Note: We don't have the UID yet, so we'll log via email
+        console.log('✓ Password reset email sent');
+
         showSuccess('forgot', 
             'Password reset link sent! Check your email (check spam folder too).'
         );
@@ -614,6 +680,13 @@ async function checkAuth() {
  */
 async function logout() {
     try {
+        const uid = auth.currentUser?.uid;
+        
+        // Log logout event
+        if (uid) {
+            await logAuthEvent(uid, 'logout', auth.currentUser.providerData[0]?.providerId || 'unknown');
+        }
+
         await auth.signOut();
         sessionStorage.clear();
         localStorage.removeItem('krapscare_email');
