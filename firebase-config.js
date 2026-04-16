@@ -4,7 +4,7 @@
  * Security: Keys are restricted to web domain only in Firebase Console
  */
 
-// Firebase Configuration
+// Firebase Configuration  
 const firebaseConfig = {
     apiKey: "AIzaSyBHlvi62OHySk1ajDQaC_58oqdKBpFSZbE",
     authDomain: "kraps-care-e2c2b.firebaseapp.com",
@@ -15,19 +15,35 @@ const firebaseConfig = {
     measurementId: "G-2G8M4FTNFZ"
 };
 
+let firebaseInitialized = false;
+let initAttempts = 0;
+const MAX_INIT_ATTEMPTS = 50;
+
 /**
- * Check and initialize Firebase
+ * Initialize Firebase Services
  */
-function setupFirebaseConfig() {
+function initializeFirebaseServices() {
+    initAttempts++;
+    
     try {
-        // Check if Firebase is loaded
+        // Check if Firebase is available
         if (typeof firebase === 'undefined' || !firebase) {
-            console.warn('⏳ Firebase still loading, will retry...');
-            setTimeout(setupFirebaseConfig, 200);
+            if (initAttempts < MAX_INIT_ATTEMPTS) {
+                console.log(`⏳ Firebase SDK loading... (attempt ${initAttempts}/${MAX_INIT_ATTEMPTS})`);
+                setTimeout(initializeFirebaseServices, 200);
+            } else {
+                console.error('✗ Firebase SDK failed to load');
+                window.firebaseError = 'Firebase SDK could not be loaded. Check your internet connection.';
+            }
             return;
         }
 
-        // Initialize if not already initialized
+        // Skip if already initialized
+        if (firebaseInitialized) {
+            return;
+        }
+
+        // Initialize Firebase
         if (!firebase.apps || firebase.apps.length === 0) {
             firebase.initializeApp(firebaseConfig);
             console.log('✓ Firebase App initialized');
@@ -35,40 +51,41 @@ function setupFirebaseConfig() {
             console.log('✓ Firebase App already initialized');
         }
 
-        // Get services
+        // Get Firebase services
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         if (!auth || !db) {
-            throw new Error('Failed to get Firebase services');
+            throw new Error('Could not get Firebase services');
         }
 
-        // Store globally
+        // Store in window for global access
         window.firebaseAuth = auth;
         window.firebaseDb = db;
 
-        console.log('✓ Firebase Auth and Firestore ready');
+        // Mark as ready
+        window.firebaseReady = true;
+        firebaseInitialized = true;
 
-        // Try to enable persistence
+        console.log('✅ Firebase fully initialized and ready');
+
+        // Enable persistence
         db.enablePersistence().catch((err) => {
-            // Persistence errors are usually not critical
-            console.log('ℹ Firestore persistence:', err.code);
+            if (err.code !== 'failed-precondition' && err.code !== 'unimplemented') {
+                console.warn('⚠ Firestore persistence:', err.message);
+            }
         });
 
     } catch (error) {
-        console.error('✗ Firebase setup error:', error);
-        // Retry on error
-        setTimeout(setupFirebaseConfig, 1000);
+        console.error('✗ Firebase initialization failed:', error.message);
+        window.firebaseError = error.message;
+        // Retry after delay
+        if (initAttempts < MAX_INIT_ATTEMPTS) {
+            setTimeout(initializeFirebaseServices, 500);
+        }
     }
 }
 
-// Start setup when document is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupFirebaseConfig);
-} else {
-    // If already loaded (rare), setup immediately
-    setupFirebaseConfig();
-}
-
-// Also setup on a small delay to catch late-loading scenarios
-setTimeout(setupFirebaseConfig, 100);
+// Start initialization
+console.log('🔄 Firebase Config: Starting initialization...');
+setTimeout(initializeFirebaseServices, 100);

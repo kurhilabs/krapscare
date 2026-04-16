@@ -27,27 +27,35 @@ let resendTimeoutId;
  */
 async function initializeFirebase() {
     try {
-        // Wait for Firebase services to be available from firebase-config.js
-        let retries = 0;
-        while ((!window.firebaseAuth || !window.firebaseDb) && retries < 50) {
+        // Wait for Firebase to be ready (set by firebase-config.js)
+        let waitCount = 0;
+        const maxWait = 100;
+
+        while (!window.firebaseReady && waitCount < maxWait) {
             await new Promise(resolve => setTimeout(resolve, 100));
-            retries++;
+            waitCount++;
         }
 
-        // Get Firebase instances from global scope (set by firebase-config.js)
+        if (!window.firebaseReady) {
+            if (window.firebaseError) {
+                throw new Error(window.firebaseError);
+            }
+            throw new Error('Firebase initialization timeout - services not available');
+        }
+
+        // Get Firebase instances
         auth = window.firebaseAuth;
         db = window.firebaseDb;
 
-        // Verify Firebase is properly initialized
         if (!auth || !db) {
-            throw new Error('Firebase initialization incomplete - services not found');
+            throw new Error('Firebase services are not properly initialized');
         }
+
+        console.log('✓ Firebase services connected');
 
         // Set up auth state listener
         auth.onAuthStateChanged(async (user) => {
             if (user && !window.location.pathname.endsWith('dashboard/index.html')) {
-                // User is logged in - redirect to dashboard
-                // But not if we're already on the dashboard
                 const currentPath = window.location.pathname;
                 if (!currentPath.includes('dashboard')) {
                     await redirectToDashboard(user.uid);
@@ -56,10 +64,11 @@ async function initializeFirebase() {
         });
 
         setupRecaptcha();
-        console.log('✓ Firebase services loaded and configured');
+        console.log('✓ Firebase authentication module ready');
+        
     } catch (error) {
-        console.error('✗ Firebase initialization error:', error);
-        showError('email', 'Failed to initialize authentication. Please refresh the page.');
+        console.error('✗ Firebase initialization error:', error.message);
+        showError('email', 'Failed to initialize authentication. Please refresh the page. Error: ' + error.message);
     }
 }
 
@@ -817,29 +826,38 @@ function prefillEmail() {
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Firebase authentication
-    initializeFirebase();
+    console.log('📄 DOM Content Loaded - Starting auth initialization');
+    
+    // Initialize Firebase
+    initializeFirebase().catch(error => {
+        console.error('Fatal auth initialization error:', error);
+    });
 
     // Pre-fill email if remembered
     prefillEmail();
 
-    // Add keyboard handlers
+    // Add keyboard handlers for form inputs
     const passwordInput = document.getElementById('password-input');
     const forgotInput = document.getElementById('forgot-email-input');
     
     if (passwordInput) {
         passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleEmailLogin();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleEmailLogin();
+            }
         });
     }
     
     if (forgotInput) {
         forgotInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleForgotPassword();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleForgotPassword();
+            }
         });
     }
 
-    // Log ready state
     console.log('✓ Authentication module loaded and ready');
 });
 
